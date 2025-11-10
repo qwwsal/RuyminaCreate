@@ -19,12 +19,12 @@ const s3 = new AWS.S3({
 });
 
 // Функция для загрузки в Yandex Cloud
-const uploadToYandex = async (filePath, originalName) => {
+const uploadToYandex = async (filePath, originalName, folder = 'portfolio') => {
     try {
-        console.log('📤 Uploading to Yandex Cloud...', filePath);
+        console.log(`📤 Uploading to Yandex Cloud (${folder})...`, filePath);
         
         const fileContent = fs.readFileSync(filePath);
-        const fileName = `portfolio/${Date.now()}-${originalName}`;
+        const fileName = `${folder}/${Date.now()}-${originalName}`;
         
         const params = {
             Bucket: process.env.YC_BUCKET_NAME,
@@ -63,7 +63,12 @@ function getContentType(filename) {
         '.jpeg': 'image/jpeg',
         '.png': 'image/png',
         '.gif': 'image/gif',
-        '.webp': 'image/webp'
+        '.webp': 'image/webp',
+        '.pdf': 'application/pdf',
+        '.doc': 'application/msword',
+        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        '.zip': 'application/zip',
+        '.rar': 'application/x-rar-compressed'
     };
     return types[ext] || 'application/octet-stream';
 }
@@ -246,6 +251,169 @@ function updateExistingReviews() {
 // Вызываем функцию после создания таблиц
 setTimeout(updateReviewsTable, 1000);
 
+// Эндпоинт для обновления URLs портфолио в БД с локальных на Yandex Cloud
+app.get('/api/update-portfolio-urls', async (req, res) => {
+  try {
+    console.log('🔄 Starting portfolio URLs update...');
+    
+    // Получаем все записи портфолио
+    db.all('SELECT * FROM portfolio', [], async (err, portfolios) => {
+      if (err) {
+        console.error('❌ DB select error:', err);
+        return res.status(500).json({ error: err.message });
+      }
+      
+      console.log(`📊 Found ${portfolios.length} portfolio records`);
+      let updatedCount = 0;
+      const updateResults = [];
+      
+      for (const portfolio of portfolios) {
+        try {
+          const oldUrls = JSON.parse(portfolio.image_urls || '[]');
+          const newUrls = [];
+          
+          console.log(`🔄 Processing portfolio ${portfolio.id}:`, oldUrls);
+          
+          for (const oldUrl of oldUrls) {
+            // Извлекаем имя файла из старого URL
+            const fileName = oldUrl.replace('/uploads/', '');
+            // Создаем новый Cloud URL
+            const newUrl = `https://storage.yandexcloud.net/ruyminacreate/portfolio/${fileName}`;
+            newUrls.push(newUrl);
+            console.log(`  📝 ${oldUrl} → ${newUrl}`);
+          }
+          
+          // Обновляем запись в БД
+          await new Promise((resolve, reject) => {
+            db.run(
+              'UPDATE portfolio SET image_urls = ? WHERE id = ?',
+              [JSON.stringify(newUrls), portfolio.id],
+              function(err) {
+                if (err) reject(err);
+                else resolve();
+              }
+            );
+          });
+          
+          updatedCount++;
+          updateResults.push({
+            id: portfolio.id,
+            title: portfolio.title,
+            oldUrls: oldUrls,
+            newUrls: newUrls,
+            status: 'success'
+          });
+          
+          console.log(`✅ Updated portfolio ${portfolio.id}`);
+          
+        } catch (portfolioError) {
+          console.error(`❌ Error updating portfolio ${portfolio.id}:`, portfolioError);
+          updateResults.push({
+            id: portfolio.id,
+            title: portfolio.title,
+            status: 'error',
+            error: portfolioError.message
+          });
+        }
+      }
+      
+      console.log(`🎉 Update completed! Updated ${updatedCount} portfolios`);
+      
+      res.json({ 
+        success: true,
+        message: `Обновлено ${updatedCount} из ${portfolios.length} записей портфолио`,
+        updatedCount,
+        totalCount: portfolios.length,
+        results: updateResults
+      });
+    });
+    
+  } catch (error) {
+    console.error('❌ Update URLs error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
+  }
+});
+
+// Эндпоинт для обновления URLs заказов в БД с локальных на Yandex Cloud
+app.get('/api/update-order-urls', async (req, res) => {
+  try {
+    console.log('🔄 Starting order URLs update...');
+    
+    db.all('SELECT * FROM orders', [], async (err, orders) => {
+      if (err) {
+        console.error('❌ DB select error:', err);
+        return res.status(500).json({ error: err.message });
+      }
+      
+      console.log(`📊 Found ${orders.length} order records`);
+      let updatedCount = 0;
+      const updateResults = [];
+      
+      for (const order of orders) {
+        try {
+          const oldUrls = JSON.parse(order.file_urls || '[]');
+          const newUrls = [];
+          
+          console.log(`🔄 Processing order ${order.id}:`, oldUrls);
+          
+          for (const oldUrl of oldUrls) {
+            const fileName = oldUrl.replace('/uploads/', '');
+            const newUrl = `https://storage.yandexcloud.net/ruyminacreate/orders/${fileName}`;
+            newUrls.push(newUrl);
+            console.log(`  📝 ${oldUrl} → ${newUrl}`);
+          }
+          
+          await new Promise((resolve, reject) => {
+            db.run(
+              'UPDATE orders SET file_urls = ? WHERE id = ?',
+              [JSON.stringify(newUrls), order.id],
+              function(err) {
+                if (err) reject(err);
+                else resolve();
+              }
+            );
+          });
+          
+          updatedCount++;
+          updateResults.push({
+            id: order.id,
+            user_id: order.user_id,
+            oldUrls: oldUrls,
+            newUrls: newUrls,
+            status: 'success'
+          });
+          
+          console.log(`✅ Updated order ${order.id}`);
+          
+        } catch (orderError) {
+          console.error(`❌ Error updating order ${order.id}:`, orderError);
+          updateResults.push({
+            id: order.id,
+            user_id: order.user_id,
+            status: 'error',
+            error: orderError.message
+          });
+        }
+      }
+      
+      res.json({ 
+        success: true,
+        message: `Обновлено ${updatedCount} из ${orders.length} заказов`,
+        updatedCount,
+        totalCount: orders.length,
+        results: updateResults
+      });
+    });
+    
+  } catch (error) {
+    console.error('❌ Update order URLs error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Добавляем endpoint для отладки - просмотр всех отзывов с информацией о заказах
 app.get('/debug/reviews', (req, res) => {
   db.all(`
@@ -373,7 +541,7 @@ app.post('/portfolio', upload.array('images', 10), async (req, res) => {
                 const imageUrls = [];
                 for (const file of req.files) {
                     console.log('🖼️ Processing file:', file.originalname);
-                    const yandexUrl = await uploadToYandex(file.path, file.originalname);
+                    const yandexUrl = await uploadToYandex(file.path, file.originalname, 'portfolio');
                     imageUrls.push(yandexUrl);
                 }
                 
@@ -408,28 +576,49 @@ app.post('/portfolio', upload.array('images', 10), async (req, res) => {
     }
 });
 
-// Полная версия с работающим статусом
-app.post('/orders', upload.array('files', 10), (req, res) => {
-  const { userId, service_id, description } = req.body;
+// ОБНОВЛЕННЫЙ ЭНДПОИНТ ДЛЯ ЗАКАЗОВ С YANDEX CLOUD
+app.post('/orders', upload.array('files', 10), async (req, res) => {
+  try {
+    const { userId, service_id, description } = req.body;
+    console.log('📨 Received order data:', { userId, service_id, files: req.files.length });
 
-  if (!userId || !service_id) {
-    return res.status(400).json({ error: 'userId и service_id обязательны' });
-  }
-
-  const files = req.files ? req.files.map(file => '/uploads/' + file.filename) : [];
-
-  // Полная версия со статусом
-  db.run(
-    'INSERT INTO orders (user_id, service_id, description, file_urls, status) VALUES (?, ?, ?, ?, ?)',
-    [userId, service_id, description || '', JSON.stringify(files), 'pending'],
-    function(err) {
-      if (err) {
-        console.error('DB insert order error:', err);
-        return res.status(500).json({ error: err.message });
-      }
-      res.json({ success: true, id: this.lastID });
+    if (!userId || !service_id) {
+      return res.status(400).json({ error: 'userId и service_id обязательны' });
     }
-  );
+
+    // Загружаем файлы в Yandex Cloud
+    const fileUrls = [];
+    for (const file of req.files) {
+      console.log('📄 Processing order file:', file.originalname);
+      const yandexUrl = await uploadToYandex(file.path, file.originalname, 'orders');
+      fileUrls.push(yandexUrl);
+    }
+
+    console.log('✅ All order files uploaded, saving to DB...');
+
+    // Сохраняем в SQLite
+    db.run(
+      'INSERT INTO orders (user_id, service_id, description, file_urls, status) VALUES (?, ?, ?, ?, ?)',
+      [userId, service_id, description || '', JSON.stringify(fileUrls), 'pending'],
+      function(err) {
+        if (err) {
+          console.error('DB insert order error:', err);
+          return res.status(500).json({ error: err.message });
+        }
+        
+        console.log('💾 Order saved to DB with ID:', this.lastID);
+        res.json({ 
+          success: true, 
+          id: this.lastID,
+          fileUrls: fileUrls 
+        });
+      }
+    );
+
+  } catch (error) {
+    console.error('❌ Order upload error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Полная версия обновления статуса
