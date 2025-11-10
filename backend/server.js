@@ -5,9 +5,68 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const AWS = require('aws-sdk');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Настройка S3 клиента для Yandex Cloud
+const s3 = new AWS.S3({
+    endpoint: 'https://storage.yandexcloud.net',
+    region: 'ru-central1',
+    accessKeyId: process.env.YC_ACCESS_KEY_ID,
+    secretAccessKey: process.env.YC_SECRET_ACCESS_KEY
+});
+
+// Функция для загрузки в Yandex Cloud
+const uploadToYandex = async (filePath, originalName) => {
+    try {
+        console.log('📤 Uploading to Yandex Cloud...', filePath);
+        
+        const fileContent = fs.readFileSync(filePath);
+        const fileName = `portfolio/${Date.now()}-${originalName}`;
+        
+        const params = {
+            Bucket: process.env.YC_BUCKET_NAME,
+            Key: fileName,
+            Body: fileContent,
+            ACL: 'public-read',
+            ContentType: getContentType(originalName)
+        };
+        
+        const result = await s3.upload(params).promise();
+        console.log('✅ Upload successful:', result.Location);
+        
+        // Удаляем временный файл
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+        
+        return result.Location;
+    } catch (error) {
+        console.error('❌ Yandex Cloud upload error:', error);
+        
+        // Очищаем временный файл даже при ошибке
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+        
+        throw error;
+    }
+};
+
+// Функция для определения типа контента
+function getContentType(filename) {
+    const ext = path.extname(filename).toLowerCase();
+    const types = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.gif': 'image/gif',
+        '.webp': 'image/webp'
+    };
+    return types[ext] || 'application/octet-stream';
+}
 
 // Настройка CORS для продакшена
 app.use(cors({
@@ -20,20 +79,23 @@ app.use(express.json());
 // Для парсинга application/x-www-form-urlencoded (формы)
 app.use(express.urlencoded({ extended: true }));
 
-// ОБНОВЛЕННЫЕ ПУТИ ДЛЯ ПРОДАКШЕНА
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// ВРЕМЕННОЕ ХРАНИЛИЩЕ ДЛЯ ЗАГРУЗКИ ФАЙЛОВ
+const tempUploadDir = path.join(__dirname, 'temp_uploads');
+if (!fs.existsSync(tempUploadDir)) {
+  fs.mkdirSync(tempUploadDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
+  destination: (req, file, cb) => cb(null, tempUploadDir),
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
 });
 const upload = multer({ storage });
 
-// Раздаем статические файлы
-app.use('/uploads', express.static(uploadDir));
+// Раздаем статические файлы (для существующих uploads если есть)
+const uploadDir = path.join(__dirname, 'uploads');
+if (fs.existsSync(uploadDir)) {
+  app.use('/uploads', express.static(uploadDir));
+}
 app.use(express.static(path.join(__dirname, '../frontend'))); // Раздаем фронтенд
 
 // ОБНОВЛЕННЫЙ ПУТЬ К БАЗЕ ДАННЫХ
@@ -290,42 +352,60 @@ app.get('/portfolio', (req, res) => {
   });
 });
 
-app.post('/portfolio', (req, res, next) => {
-  upload.array('image_files', 10)(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      console.error('Multer error:', err);
-      return res.status(400).json({ error: `Ошибка загрузки файлов: ${err.message}` });
-    } else if (err) {
-      console.error('Unknown multer error:', err);
-      return res.status(500).json({ error: `Ошибка сервера: ${err.message}` });
-    }
-
-    const { userId, title, description } = req.body;
-
-    if (!userId || !title) {
-      return res.status(400).json({ error: 'userId и title обязательны' });
-    }
-
-    const images = req.files ? req.files.map(file => '/uploads/' + file.filename) : [];
-
-    db.get('SELECT isAdmin FROM users WHERE id = ?', [userId], (err, user) => {
-      if (err || !user || user.isAdmin !== 1) {
-        return res.status(403).json({ error: 'Доступ запрещён' });
-      }
-
-      db.run(
-        'INSERT INTO portfolio (user_id, title, description, image_urls) VALUES (?, ?, ?, ?)',
-        [userId, title, description || '', JSON.stringify(images)],
-        function (err) {
-          if (err) {
-            console.error('DB insert error:', err);
-            return next(err);
-          }
-          res.json({ success: true, id: this.lastID });
+// ОБНОВЛЕННЫЙ ЭНДПОИНТ ДЛЯ ЗАГРУЗКИ ПОРТФОЛИО С YANDEX CLOUD
+app.post('/portfolio', upload.array('images', 10), async (req, res) => {
+    try {
+        const { userId, title, description } = req.body;
+        console.log('📨 Received portfolio data:', { title, userId, files: req.files.length });
+        
+        if (!userId || !title) {
+            return res.status(400).json({ error: 'userId и title обязательны' });
         }
-      );
-    });
-  });
+
+        // Проверяем права администратора
+        db.get('SELECT isAdmin FROM users WHERE id = ?', [userId], async (err, user) => {
+            if (err || !user || user.isAdmin !== 1) {
+                return res.status(403).json({ error: 'Доступ запрещён' });
+            }
+
+            try {
+                // Загружаем каждое изображение в Yandex Cloud
+                const imageUrls = [];
+                for (const file of req.files) {
+                    console.log('🖼️ Processing file:', file.originalname);
+                    const yandexUrl = await uploadToYandex(file.path, file.originalname);
+                    imageUrls.push(yandexUrl);
+                }
+                
+                console.log('✅ All files uploaded, saving to DB...');
+                
+                // Сохраняем в SQLite
+                db.run(
+                    'INSERT INTO portfolio (user_id, title, description, image_urls) VALUES (?, ?, ?, ?)',
+                    [userId, title, description || '', JSON.stringify(imageUrls)],
+                    function (err) {
+                        if (err) {
+                            console.error('DB insert error:', err);
+                            return res.status(500).json({ error: err.message });
+                        }
+                        
+                        console.log('💾 Saved to DB with ID:', this.lastID);
+                        res.json({ 
+                            success: true, 
+                            id: this.lastID,
+                            imageUrls: imageUrls 
+                        });
+                    }
+                );
+            } catch (uploadError) {
+                console.error('❌ Portfolio upload error:', uploadError);
+                res.status(500).json({ error: uploadError.message });
+            }
+        });
+    } catch (error) {
+        console.error('❌ Portfolio endpoint error:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Полная версия с работающим статусом
@@ -532,4 +612,5 @@ app.get('/RegisterPage.html', (req, res) => {
 // Запуск сервера с указанием хоста
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server started on port ${PORT}`);
+  console.log(`Yandex Cloud configured for bucket: ${process.env.YC_BUCKET_NAME || 'Not set'}`);
 });
