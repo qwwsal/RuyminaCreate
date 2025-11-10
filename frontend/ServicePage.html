@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Услуги Ryumina Create</title>
-  <link rel="stylesheet" href="ServicePageStyle.css" />
-  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+  <link rel="stylesheet" href="./ServicePageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="./Image/favicon.svg">
 </head>
 <body>
 <header>
-  <img class="logo" src="image/logo.svg" alt="Логотип" />
+  <img class="logo" src="./Image/logo.svg" alt="Логотип" />
 
   <nav role="navigation" aria-label="Главное меню">
-    <a href="MainPage.html">Главная</a>
-    <a href="ServicePage.html">Услуги</a>
-    <a href="PortfolioPage.html">Портфолио</a>
-    <a href="ReviewsPage.html">Отзывы</a>
+    <a href="./MainPage.html">Главная</a>
+    <a href="./ServicePage.html">Услуги</a>
+    <a href="./PortfolioPage.html">Портфолио</a>
+    <a href="./ReviewsPage.html">Отзывы</a>
   </nav>
 
   <a href="#" id="profileLink">
-    <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+    <img class="user" src="./Image/User.svg" alt="Профиль пользователя" />
   </a>
 </header>
 
@@ -41,23 +41,27 @@
 
 <footer>
   <div class="footer-logo">
-    <img class="logo" src="image/logo.svg" />
+    <img class="logo" src="./Image/logo.svg" />
   </div>
   <div>Я в социальных сетях</div>
   <div class="social-icons" role="list" aria-label="Социальные сети">
     <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+      <img class="socials" src="./Image/Instagram.svg" alt="Instagram" />
     </a>
     <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Behance.svg" alt="Behance" />
+      <img class="socials" src="./Image/Behance.svg" alt="Behance" />
     </a>
     <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/VK.svg" alt="VK" />
+      <img class="socials" src="./Image/VK.svg" alt="VK" />
     </a>
   </div>
 </footer>
 
 <script>
+  // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ API URL ДЛЯ ПРОДАКШЕНА
+  const API_URL = window.location.origin;
+  console.log('API URL:', API_URL);
+
   const profileLink = document.getElementById('profileLink');
 
   // Функция для проверки авторизации
@@ -83,22 +87,22 @@
     e.preventDefault();
     const user = checkAuth();
     if (!user) {
-      window.location.href = 'RegisterPage.html';
+      window.location.href = './RegisterPage.html';
       return;
     }
     if (isAdmin(user.email)) {
-      window.location.href = 'AdministratorPage.html';
+      window.location.href = './AdministratorPage.html';
     } else if (user.id) {
-      window.location.href = `ProfilePage.html?userId=${user.id}`;
+      window.location.href = `./ProfilePage.html?userId=${user.id}`;
     } else {
-      window.location.href = 'RegisterPage.html';
+      window.location.href = './RegisterPage.html';
     }
   });
 
   async function loadServices() {
     try {
       console.log('Загрузка услуг...');
-      const response = await fetch('http://localhost:3000/services');
+      const response = await fetch(`${API_URL}/services`);
       
       if (!response.ok) {
         throw new Error(`Ошибка загрузки услуг: ${response.status}`);
@@ -143,7 +147,7 @@
           const user = checkAuth();
           if (!user) {
             alert('Пожалуйста, авторизуйтесь для заказа услуги.');
-            window.location.href = 'AutorizationPage.html';
+            window.location.href = './AutorizationPage.html';
             return;
           }
           
@@ -154,7 +158,7 @@
             // Сохраняем serviceId в localStorage перед переходом
             localStorage.setItem('selectedServiceId', serviceId);
             console.log('ServiceId сохранен в localStorage:', serviceId);
-            window.location.href = 'AddOrderPage.html';
+            window.location.href = './AddOrderPage.html';
           } else {
             console.error('Service ID не найден');
             alert('Ошибка: не удалось определить услугу.');

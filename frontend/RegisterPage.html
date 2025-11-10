@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Регистрация</title>
-  <link rel="stylesheet" href="RegisterPageStyle.css" />
-  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+  <link rel="stylesheet" href="./RegisterPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="./Image/favicon.svg">
 </head>
 <body>
   <header>
-    <img class="logo" src="image/logo.svg" />
+    <img class="logo" src="./Image/logo.svg" />
 
     <nav role="navigation" aria-label="Главное меню">
-      <a href="MainPage.html">Главная</a>
-      <a href="ServicePage.html">Услуги</a>
-      <a href="PortfolioPage.html">Портфолио</a>
-      <a href="ReviewsPage.html">Отзывы</a>
+      <a href="./MainPage.html">Главная</a>
+      <a href="./ServicePage.html">Услуги</a>
+      <a href="./PortfolioPage.html">Портфолио</a>
+      <a href="./ReviewsPage.html">Отзывы</a>
     </nav>
 
     <a href="#" id="profileLink">
-      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+      <img class="user" src="./Image/User.svg" alt="Профиль пользователя" />
     </a>
   </header>
 
@@ -62,28 +62,32 @@
       <div class="error-message" id="error"></div>
       <button type="submit">Зарегистрироваться</button>
     </form>
-    <div class="login"><a href="AutorizationPage.html">Вход</a></div>
+    <div class="login"><a href="./AutorizationPage.html">Вход</a></div>
   </div>
 
   <footer>
   <div class="footer-logo">
-    <img class="logo" src="image/logo.svg" />
+    <img class="logo" src="./Image/logo.svg" />
   </div>
   <div>Я в социальных сетях</div>
   <div class="social-icons" role="list" aria-label="Социальные сети">
     <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+      <img class="socials" src="./Image/Instagram.svg" alt="Instagram" />
     </a>
     <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Behance.svg" alt="Behance" />
+      <img class="socials" src="./Image/Behance.svg" alt="Behance" />
     </a>
     <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/VK.svg" alt="VK" />
+      <img class="socials" src="./Image/VK.svg" alt="VK" />
     </a>
   </div>
 </footer>
 
   <script>
+    // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ API URL ДЛЯ ПРОДАКШЕНА
+    const API_URL = window.location.origin;
+    console.log('API URL:', API_URL);
+
     const form = document.getElementById('registrationForm');
     const errorDiv = document.getElementById('error');
     const profileLink = document.getElementById('profileLink');
@@ -300,22 +304,22 @@
       e.preventDefault();
       const userStr = localStorage.getItem('user');
       if (!userStr) {
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
         return;
       }
       
       try {
         const user = JSON.parse(userStr);
         if (isAdmin(user.email)) {
-          window.location.href = 'AdministratorPage.html';
+          window.location.href = './AdministratorPage.html';
         } else if (user.id) {
-          window.location.href = `ProfilePage.html?userId=${user.id}`;
+          window.location.href = `./ProfilePage.html?userId=${user.id}`;
         } else {
-          window.location.href = 'RegisterPage.html';
+          window.location.href = './RegisterPage.html';
         }
       } catch (error) {
         console.error('Ошибка при чтении данных пользователя:', error);
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
       }
     });
 
@@ -372,7 +376,7 @@
 
       try {
         console.log('=== Регистрация начата ===');
-        const response = await fetch('http://localhost:3000/register', {
+        const response = await fetch(`${API_URL}/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ firstName, lastName, email, phone, password }),
@@ -406,7 +410,7 @@
         const userId = data.userId || data.id;
         if (userId) {
           console.log('Переход на страницу профиля с ID:', userId);
-          window.location.href = `ProfilePage.html?userId=${userId}`;
+          window.location.href = `./ProfilePage.html?userId=${userId}`;
         } else {
           errorDiv.textContent = 'Не удалось получить ID пользователя для перехода';
         }
@@ -428,7 +432,7 @@
           const user = JSON.parse(userStr);
           if (user.id) {
             console.log('Пользователь уже авторизован, перенаправляем на профиль');
-            window.location.href = `ProfilePage.html?userId=${user.id}`;
+            window.location.href = `./ProfilePage.html?userId=${user.id}`;
           }
         } catch (error) {
           console.error('Ошибка при чтении данных пользователя:', error);

@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ryumina Create - Отзывы</title>
-  <link rel="stylesheet" href="ReviewsPageStyle.css" />
-  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+  <link rel="stylesheet" href="./ReviewsPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="./Image/favicon.svg">
 </head>
 <body>
   <header>
-    <img class="logo" src="image/logo.svg" />
+    <img class="logo" src="./Image/logo.svg" />
 
     <nav role="navigation" aria-label="Главное меню">
-      <a href="MainPage.html">Главная</a>
-      <a href="ServicePage.html">Услуги</a>
-      <a href="PortfolioPage.html">Портфолио</a>
-      <a href="ReviewsPage.html">Отзывы</a>
+      <a href="./MainPage.html">Главная</a>
+      <a href="./ServicePage.html">Услуги</a>
+      <a href="./PortfolioPage.html">Портфолио</a>
+      <a href="./ReviewsPage.html">Отзывы</a>
     </nav>
 
     <a href="#" id="profileLink">
-      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+      <img class="user" src="./Image/User.svg" alt="Профиль пользователя" />
     </a>
   </header>
 
@@ -60,7 +60,7 @@
           </div>
           
           <button type="submit" class="submit-btn" id="submitReview">Отправить отзыв</button>
-          <a href="ProfilePage.html" class="back-to-profile">Вернуться в профиль</a>
+          <a href="./ProfilePage.html" class="back-to-profile">Вернуться в профиль</a>
         </form>
         <div id="reviewFeedback"></div>
       </div>
@@ -69,14 +69,14 @@
       <div class="existing-review-message" id="existingReviewMessage" style="display: none;">
         <h3>Вы уже оставили отзыв на этот заказ</h3>
         <div id="existingReviewDetails"></div>
-        <a href="ProfilePage.html" class="back-to-profile">Вернуться в профиль</a>
+        <a href="./ProfilePage.html" class="back-to-profile">Вернуться в профиль</a>
       </div>
 
       <!-- Приглашение авторизоваться (показывается неавторизованным пользователям при переходе с заказа) -->
       <div class="auth-prompt" id="authPrompt" style="display: none;">
         <h3>Чтобы оставить отзыв, необходимо авторизоваться</h3>
-        <a href="AutorizationPage.html">Войти в аккаунт</a> или 
-        <a href="RegisterPage.html">Зарегистрироваться</a>
+        <a href="./AutorizationPage.html">Войти в аккаунт</a> или 
+        <a href="./RegisterPage.html">Зарегистрироваться</a>
       </div>
 
       <!-- Список отзывов (показывается всем) -->
@@ -93,23 +93,27 @@
 
   <footer>
   <div class="footer-logo">
-    <img class="logo" src="image/logo.svg" />
+    <img class="logo" src="./Image/logo.svg" />
   </div>
   <div>Я в социальных сетях</div>
   <div class="social-icons" role="list" aria-label="Социальные сети">
     <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+      <img class="socials" src="./Image/Instagram.svg" alt="Instagram" />
     </a>
     <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Behance.svg" alt="Behance" />
+      <img class="socials" src="./Image/Behance.svg" alt="Behance" />
     </a>
     <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/VK.svg" alt="VK" />
+      <img class="socials" src="./Image/VK.svg" alt="VK" />
     </a>
   </div>
 </footer>
 
   <script>
+    // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ API URL ДЛЯ ПРОДАКШЕНА
+    const API_URL = window.location.origin;
+    console.log('API URL:', API_URL);
+
     const profileLink = document.getElementById('profileLink');
     const reviewForm = document.getElementById('reviewForm');
     const ratingStars = document.getElementById('ratingStars');
@@ -151,15 +155,15 @@
       e.preventDefault();
       const user = checkAuth();
       if (!user) {
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
         return;
       }
       if (user.email && user.email.toLowerCase() === 'polina@mail.ru') {
-        window.location.href = 'AdministratorPage.html';
+        window.location.href = './AdministratorPage.html';
       } else if (user.id) {
-        window.location.href = `ProfilePage.html?userId=${user.id}`;
+        window.location.href = `./ProfilePage.html?userId=${user.id}`;
       } else {
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
       }
     });
 
@@ -186,7 +190,7 @@
     // Проверка существования отзыва для заказа (используем новый endpoint)
     async function checkExistingReview(orderId, userId) {
       try {
-        const response = await fetch(`http://localhost:3000/reviews/order/${orderId}?userId=${userId}`);
+        const response = await fetch(`${API_URL}/reviews/order/${orderId}?userId=${userId}`);
         if (!response.ok) {
           throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
         }
@@ -202,7 +206,7 @@
     // Проверка, принадлежит ли заказ текущему пользователю
     async function checkOrderBelongsToUser(orderId, userId) {
       try {
-        const response = await fetch(`http://localhost:3000/profile?userId=${userId}`);
+        const response = await fetch(`${API_URL}/profile?userId=${userId}`);
         if (!response.ok) {
           return false;
         }
@@ -415,7 +419,7 @@
     // Загрузка существующих отзывов
     async function loadReviews() {
       try {
-        const response = await fetch('http://localhost:3000/reviews');
+        const response = await fetch(`${API_URL}/reviews`);
         if (!response.ok) throw new Error('Ошибка загрузки отзывов');
         
         const reviews = await response.json();
@@ -508,7 +512,7 @@
         
         if (isEditing && existingReview) {
           // Редактирование существующего отзыва
-          response = await fetch(`http://localhost:3000/reviews/${existingReview.id}`, {
+          response = await fetch(`${API_URL}/reviews/${existingReview.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -518,7 +522,7 @@
           });
         } else {
           // Создание нового отзыва
-          response = await fetch('http://localhost:3000/reviews', {
+          response = await fetch(`${API_URL}/reviews`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -552,7 +556,7 @@
 
         // Через 3 секунды перенаправляем в профиль
         setTimeout(() => {
-          window.location.href = `ProfilePage.html?userId=${currentUser.id}`;
+          window.location.href = `./ProfilePage.html?userId=${currentUser.id}`;
         }, 3000);
 
       } catch (error) {

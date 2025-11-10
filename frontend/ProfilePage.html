@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ryumina Create - Профиль</title>
-  <link rel="stylesheet" href="ProfilePageStyle.css" />
-  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+  <link rel="stylesheet" href="./ProfilePageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="./Image/favicon.svg">
 </head>
 <body>
   <header>
-    <img class="logo" src="image/logo.svg" alt="Логотип" />
+    <img class="logo" src="./Image/logo.svg" alt="Логотип" />
 
     <nav role="navigation" aria-label="Главное меню">
-      <a href="MainPage.html">Главная</a>
-      <a href="ServicePage.html">Услуги</a>
-      <a href="PortfolioPage.html">Портфолио</a>
-      <a href="ReviewsPage.html">Отзывы</a>
+      <a href="./MainPage.html">Главная</a>
+      <a href="./ServicePage.html">Услуги</a>
+      <a href="./PortfolioPage.html">Портфолио</a>
+      <a href="./ReviewsPage.html">Отзывы</a>
     </nav>
 
     <a href="#" id="profileLink" aria-label="Кнопка профиля">
-      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+      <img class="user" src="./Image/User.svg" alt="Профиль пользователя" />
     </a>
   </header>
 
@@ -41,23 +41,27 @@
 
   <footer>
   <div class="footer-logo">
-    <img class="logo" src="image/logo.svg" />
+    <img class="logo" src="./Image/logo.svg" />
   </div>
   <div>Я в социальных сетях</div>
   <div class="social-icons" role="list" aria-label="Социальные сети">
     <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+      <img class="socials" src="./Image/Instagram.svg" alt="Instagram" />
     </a>
     <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Behance.svg" alt="Behance" />
+      <img class="socials" src="./Image/Behance.svg" alt="Behance" />
     </a>
     <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/VK.svg" alt="VK" />
+      <img class="socials" src="./Image/VK.svg" alt="VK" />
     </a>
   </div>
 </footer>
 
   <script>
+    // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ API URL ДЛЯ ПРОДАКШЕНА
+    const API_URL = window.location.origin;
+    console.log('API URL:', API_URL);
+
     const profileLink = document.getElementById('profileLink');
     const logoutBtn = document.getElementById('logoutBtn');
     const userFirstName = document.getElementById('userFirstName');
@@ -90,15 +94,15 @@
       e.preventDefault();
       const user = checkAuth();
       if (!user) {
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
         return;
       }
-      window.location.href = `ProfilePage.html?userId=${user.id}`;
+      window.location.href = `./ProfilePage.html?userId=${user.id}`;
     });
 
     logoutBtn.addEventListener('click', () => {
       localStorage.removeItem('user');
-      window.location.href = 'AutorizationPage.html';
+      window.location.href = './AutorizationPage.html';
     });
 
     function getUserIdFromURL() {
@@ -147,7 +151,7 @@
     // Функция для получения отзыва для конкретного заказа
     async function getReviewForOrder(orderId, userId) {
       try {
-        const response = await fetch(`http://localhost:3000/reviews/order/${orderId}?userId=${userId}`);
+        const response = await fetch(`${API_URL}/reviews/order/${orderId}?userId=${userId}`);
         console.log('Поиск отзыва для заказа:', orderId, 'пользователя:', userId);
         
         if (!response.ok) {
@@ -174,7 +178,7 @@
       const currentUser = checkAuth();
       if (!currentUser) {
         console.log('Пользователь не авторизован, перенаправляем на регистрацию');
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
         return;
       }
 
@@ -199,7 +203,7 @@
 
       try {
         console.log('Загружаем профиль для userId:', targetUserId);
-        const response = await fetch(`http://localhost:3000/profile?userId=${targetUserId}`);
+        const response = await fetch(`${API_URL}/profile?userId=${targetUserId}`);
         
         console.log('Статус ответа:', response.status);
         if (!response.ok) {
@@ -243,7 +247,7 @@
                   <div class="files-title">Прикрепленные файлы:</div>
                   <div class="files-list">
                     ${files.map(filePath => {
-                      const url = filePath.startsWith('http') ? filePath : `http://localhost:3000${filePath}`;
+                      const url = filePath.startsWith('http') ? filePath : `${API_URL}${filePath}`;
                       const fileName = filePath.split('/').pop();
                       const fileIcon = getFileIcon(fileName);
                       return `
@@ -339,7 +343,7 @@
                 }));
                 
                 // Переходим на страницу отзывов
-                window.location.href = 'ReviewsPage.html';
+                window.location.href = './ReviewsPage.html';
               });
             });
           });
@@ -349,7 +353,7 @@
             <div class="no-orders">
               <h3>У вас пока нет заказов</h3>
               <p>Перейдите в раздел "Услуги" чтобы оформить первый заказ!</p>
-              <a href="ServicePage.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #800000; color: white; text-decoration: none; border-radius: 6px;">
+              <a href="./ServicePage.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #800000; color: white; text-decoration: none; border-radius: 6px;">
                 Перейти к услугам
               </a>
             </div>

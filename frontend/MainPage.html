@@ -4,27 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ryumina Create</title>
-  <link rel="stylesheet" href="MainPageStyle.css" />
-  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+  <link rel="stylesheet" href="./MainPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="./Image/favicon.svg">
 </head>
 <body>
   <header>
-    <img class="logo" src="image/logo.svg" />
+    <img class="logo" src="./Image/logo.svg" />
 
     <nav role="navigation" aria-label="Главное меню">
-      <a href="MainPage.html">Главная</a>
-      <a href="ServicePage.html">Услуги</a>
-      <a href="PortfolioPage.html">Портфолио</a>
-      <a href="ReviewsPage.html">Отзывы</a>
+      <a href="./MainPage.html">Главная</a>
+      <a href="./ServicePage.html">Услуги</a>
+      <a href="./PortfolioPage.html">Портфолио</a>
+      <a href="./ReviewsPage.html">Отзывы</a>
     </nav>
 
     <a href="#" id="profileLink">
-      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+      <img class="user" src="./Image/User.svg" alt="Профиль пользователя" />
     </a>
   </header>
 
   <main>
-    <img class="main-block" src="image/MainBlock.svg" />
+    <img class="main-block" src="./Image/MainBlock.svg" />
 
     <section class="red-info-block">
       <p>Меня зовут Полина, я начинающий программист с широкими знаниями в различных языках программирования.
@@ -35,7 +35,7 @@
 
     <section class="about-me">
       <h1>ОБО МНЕ</h1>
-      <img class="polina-text" src="image/polinatext.svg" />
+      <img class="polina-text" src="./Image/polinatext.svg" />
       <section class="reasons">
         <div class="reason">
           <h1>3 года</h1>
@@ -67,39 +67,43 @@
 
   <footer>
   <div class="footer-logo">
-    <img class="logo" src="image/logo.svg" />
+    <img class="logo" src="./Image/logo.svg" />
   </div>
   <div>Я в социальных сетях</div>
   <div class="social-icons" role="list" aria-label="Социальные сети">
     <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+      <img class="socials" src="./Image/Instagram.svg" alt="Instagram" />
     </a>
     <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/Behance.svg" alt="Behance" />
+      <img class="socials" src="./Image/Behance.svg" alt="Behance" />
     </a>
     <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
-      <img class="socials" src="image/VK.svg" alt="VK" />
+      <img class="socials" src="./Image/VK.svg" alt="VK" />
     </a>
   </div>
 </footer>
 
   <script>
+    // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ API URL ДЛЯ ПРОДАКШЕНА
+    const API_URL = window.location.origin;
+    console.log('API URL:', API_URL);
+
     const profileLink = document.getElementById('profileLink');
 
     profileLink.addEventListener('click', function(e) {
       e.preventDefault();
       const userStr = localStorage.getItem('user');
       if (!userStr) {
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
         return;
       }
       const user = JSON.parse(userStr);
       if (user.email && user.email.toLowerCase() === 'polina@mail.ru') {
-        window.location.href = 'AdministratorPage.html';
+        window.location.href = './AdministratorPage.html';
       } else if (user.id) {
-        window.location.href = `ProfilePage.html?userId=${user.id}`;
+        window.location.href = `./ProfilePage.html?userId=${user.id}`;
       } else {
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
       }
     });
 
@@ -114,7 +118,7 @@
         casesContainer.innerHTML = '<div class="cases-loading">Загрузка кейсов...</div>';
 
         console.log('Начало загрузки кейсов...');
-        const response = await fetch('http://localhost:3000/portfolio?_sort=id&_order=desc&_limit=3');
+        const response = await fetch(`${API_URL}/portfolio`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -123,7 +127,8 @@
         const portfolioItems = await response.json();
         console.log('Получены данные портфолио:', portfolioItems);
         
-        const itemsToShow = portfolioItems.slice(0, 3);
+        // Берем последние 3 элемента
+        const itemsToShow = portfolioItems.slice(-3).reverse();
         
         if (itemsToShow.length === 0) {
           casesContainer.innerHTML = '<div class="cases-error">Портфолио пока пустое</div>';
@@ -141,7 +146,6 @@
           caseItem.setAttribute('aria-label', `Кейс: ${item.title}`);
           
           let imageUrl = '';
-          let fileName = '';
           
           // Обрабатываем image_urls
           if (item.image_urls) {
@@ -169,15 +173,13 @@
           
           // Если нашли изображение, обрабатываем путь
           if (imageUrl) {
-            // Извлекаем имя файла из пути
-            fileName = imageUrl.split('/').pop();
-            console.log('Имя файла:', fileName);
-            
-            // Формируем правильный URL
-            imageUrl = `http://localhost:3001/backend/uploads/${fileName}`;
+            // Формируем правильный URL для хостинга
+            if (!imageUrl.startsWith('http')) {
+              imageUrl = `${API_URL}${imageUrl}`;
+            }
             console.log('Финальный URL изображения:', imageUrl);
           } else {
-            imageUrl = 'image/Website.svg';
+            imageUrl = './Image/Website.svg';
             console.log('Изображение не найдено, используем заглушку');
           }
           
@@ -185,17 +187,17 @@
           
           caseItem.innerHTML = `
             <img src="${imageUrl}" alt="${item.title}" 
-                 onerror="console.log('Ошибка загрузки изображения для ${item.title}:', this.src); this.src='image/Website.svg'" />
+                 onerror="console.log('Ошибка загрузки изображения для ${item.title}:', this.src); this.src='./Image/Website.svg'" />
             <div class="case-label">${item.title}</div>
           `;
           
           caseItem.addEventListener('click', function() {
-            window.location.href = 'PortfolioPage.html';
+            window.location.href = './PortfolioPage.html';
           });
           
           caseItem.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
-              window.location.href = 'PortfolioPage.html';
+              window.location.href = './PortfolioPage.html';
             }
           });
           

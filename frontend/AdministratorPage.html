@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ryumina Create - Администратор</title>
-  <link rel="stylesheet" href="AdministratorPageStyle.css" />
-  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+  <link rel="stylesheet" href="./AdministratorPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="./Image/favicon.svg">
 </head>
 <body>
   <header>
-    <img class="logo" src="image/logo.svg" alt="Логотип" />
+    <img class="logo" src="./Image/logo.svg" alt="Логотип" />
 
     <nav role="navigation" aria-label="Главное меню">
-      <a href="MainPage.html">Главная</a>
-      <a href="ServicePage.html">Услуги</a>
-      <a href="PortfolioPage.html">Портфолио</a>
-      <a href="ReviewsPage.html">Отзывы</a>
+      <a href="./MainPage.html">Главная</a>
+      <a href="./ServicePage.html">Услуги</a>
+      <a href="./PortfolioPage.html">Портфолио</a>
+      <a href="./ReviewsPage.html">Отзывы</a>
     </nav>
 
     <a href="#" id="profileLink" aria-label="Кнопка профиля">
-      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+      <img class="user" src="./Image/User.svg" alt="Профиль пользователя" />
     </a>
   </header>
 
@@ -72,24 +72,27 @@
 
   <footer>
     <div class="footer-logo">
-      <img class="logo" src="image/logo.svg" />
+      <img class="logo" src="./Image/logo.svg" />
     </div>
     <div>Я в социальных сетях</div>
     <div class="social-icons" role="list" aria-label="Социальные сети">
       <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
-        <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+        <img class="socials" src="./Image/Instagram.svg" alt="Instagram" />
       </a>
       <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
-        <img class="socials" src="image/Behance.svg" alt="Behance" />
+        <img class="socials" src="./Image/Behance.svg" alt="Behance" />
       </a>
       <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
-        <img class="socials" src="image/VK.svg" alt="VK" />
+        <img class="socials" src="./Image/VK.svg" alt="VK" />
       </a>
     </div>
   </footer>
 
   <script>
-    // JavaScript код остается без изменений
+    // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ API URL ДЛЯ ПРОДАКШЕНА
+    const API_URL = window.location.origin;
+    console.log('API URL:', API_URL);
+
     const adminFirstName = document.getElementById('adminFirstName');
     const adminLastName = document.getElementById('adminLastName');
     const adminEmail = document.getElementById('adminEmail');
@@ -109,7 +112,7 @@
     function getAdminData() {
       const userData = localStorage.getItem('user');
       if (!userData) {
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
         return null;
       }
       return JSON.parse(userData);
@@ -125,7 +128,7 @@
 
       try {
         console.log('Загрузка заказов для администратора...');
-        const response = await fetch(`http://localhost:3000/orders?isAdmin=1&userId=${admin.id}`);
+        const response = await fetch(`${API_URL}/orders?isAdmin=1&userId=${admin.id}`);
         if (!response.ok) throw new Error('Ошибка загрузки заказов');
         allOrders = await response.json();
         console.log('Загружены заказы:', allOrders);
@@ -160,7 +163,7 @@
           const files = order.file_urls ? JSON.parse(order.file_urls) : [];
           if (files.length) {
             filesHtml = files.map(filePath => {
-              const url = filePath.startsWith('http') ? filePath : `http://localhost:3000${filePath}`;
+              const url = filePath.startsWith('http') ? filePath : `${API_URL}${filePath}`;
               const fileName = url.split('/').pop();
               return `<a href="${url}" target="_blank" rel="noopener noreferrer">${fileName}</a>`;
             }).join(', ');
@@ -213,7 +216,7 @@
         try {
           console.log(`Обновление статуса заказа ${orderId} на completed`);
           
-          const response = await fetch(`http://localhost:3000/orders/${orderId}/status`, {
+          const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
             method: 'PATCH',
             headers: { 
               'Content-Type': 'application/json'
@@ -261,7 +264,7 @@
       formData.append('userId', admin.id);
 
       try {
-        const response = await fetch('http://localhost:3000/portfolio', {
+        const response = await fetch(`${API_URL}/portfolio`, {
           method: 'POST',
           body: formData
         });
@@ -300,7 +303,7 @@
       }
       
       try {
-        const response = await fetch('http://localhost:3000/services', {
+        const response = await fetch(`${API_URL}/services`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -327,12 +330,12 @@
     document.addEventListener('DOMContentLoaded', () => {
       const userStr = localStorage.getItem('user');
       if (!userStr) {
-        window.location.href = 'RegisterPage.html';
+        window.location.href = './RegisterPage.html';
         return;
       }
       const user = JSON.parse(userStr);
       if (!(user.email && user.email.toLowerCase() === 'polina@mail.ru')) {
-        window.location.href = `ProfilePage.html?userId=${user.id || ''}`;
+        window.location.href = `./ProfilePage.html?userId=${user.id || ''}`;
         return;
       }
       loadAdminInfoAndOrders();
@@ -340,7 +343,7 @@
 
     logoutBtn.addEventListener('click', () => {
       localStorage.removeItem('user');
-      window.location.href = 'AutorizationPage.html';
+      window.location.href = './AutorizationPage.html';
     });
   </script>
 </body>
