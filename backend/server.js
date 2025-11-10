@@ -488,12 +488,12 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.message || 'Внутренняя ошибка сервера' });
 });
 
-// ДОБАВЛЕНО: Обработчик для SPA - все остальные GET запросы отправляем на фронтенд
+// ИСПРАВЛЕНО: Обработчик для SPA - все остальные GET запросы отправляем на MainPage.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(__dirname, '../frontend/MainPage.html'));
 });
 
-// ОБНОВЛЕНО: Запуск сервера с указанием хоста
+// Запуск сервера с указанием хоста
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server started on port ${PORT}`);
 });
