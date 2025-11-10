@@ -61,6 +61,27 @@
   const API_URL = window.location.origin;
   console.log('API URL:', API_URL);
 
+  // Функция для получения правильного URL изображения
+  function getImageUrl(imagePath) {
+    console.log('Обработка изображения:', imagePath);
+    
+    // Если это уже Cloud URL - используем как есть
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    
+    // Если это старый локальный путь (/uploads/filename) - конвертируем в Cloud URL
+    if (imagePath.startsWith('/uploads/')) {
+      const fileName = imagePath.replace('/uploads/', '');
+      const cloudUrl = `https://storage.yandexcloud.net/ruyminacreate/portfolio/${fileName}`;
+      console.log('Конвертирован локальный путь в Cloud URL:', cloudUrl);
+      return cloudUrl;
+    }
+    
+    // Если это просто имя файла без пути - добавляем к API URL (на случай старых записей)
+    return `${API_URL}/uploads/${imagePath}`;
+  }
+
   async function loadPortfolio() {
     try {
       const response = await fetch(`${API_URL}/portfolio`);
@@ -84,10 +105,8 @@
           images = [];
         }
 
-        const fullImageUrls = images.map(src => {
-          if (/^(https?:)?\/\//.test(src)) return src;
-          return `${API_URL}${src}`;
-        });
+        // Используем функцию getImageUrl для правильного формирования URL
+        const fullImageUrls = images.map(src => getImageUrl(src));
 
         const block = document.createElement('div');
         block.className = 'catalog-block';
@@ -98,7 +117,11 @@
           <div class="catalog-images">
             <button class="slider-button prev" aria-label="Предыдущее изображение">‹</button>
             <button class="slider-button next" aria-label="Следующее изображение">›</button>
-            ${fullImageUrls.map((url, i) => `<img src="${url}" alt="Изображение ${i+1}" class="${i === 0 ? 'active' : ''}" />`).join('')}
+            ${fullImageUrls.map((url, i) => 
+              `<img src="${url}" alt="Изображение ${i+1} - ${item.title}" 
+                    class="${i === 0 ? 'active' : ''}" 
+                    onerror="console.log('Ошибка загрузки изображения:', this.src); this.style.display='none'" />`
+            ).join('')}
           </div>
         `;
 

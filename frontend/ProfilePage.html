@@ -130,6 +130,27 @@
       return icons[ext] || '📎';
     }
 
+    // Функция для получения правильного URL файла
+    function getFileUrl(filePath) {
+      console.log('Обработка файла:', filePath);
+      
+      // Если это уже Cloud URL - используем как есть
+      if (filePath.startsWith('http')) {
+        return filePath;
+      }
+      
+      // Если это старый локальный путь (/uploads/filename) - конвертируем в Cloud URL
+      if (filePath.startsWith('/uploads/')) {
+        const fileName = filePath.replace('/uploads/', '');
+        const cloudUrl = `https://storage.yandexcloud.net/ruyminacreate/orders/${fileName}`;
+        console.log('Конвертирован локальный путь в Cloud URL:', cloudUrl);
+        return cloudUrl;
+      }
+      
+      // Если это просто имя файла без пути - добавляем к API URL (на случай старых записей)
+      return `${API_URL}/uploads/${filePath}`;
+    }
+
     // Функция для получения класса статуса
     function getStatusClass(status) {
       switch(status) {
@@ -247,11 +268,12 @@
                   <div class="files-title">Прикрепленные файлы:</div>
                   <div class="files-list">
                     ${files.map(filePath => {
-                      const url = filePath.startsWith('http') ? filePath : `${API_URL}${filePath}`;
+                      // Используем функцию getFileUrl для правильного формирования URL
+                      const url = getFileUrl(filePath);
                       const fileName = filePath.split('/').pop();
                       const fileIcon = getFileIcon(fileName);
                       return `
-                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="file-link">
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="file-link" title="Открыть файл: ${fileName}">
                           <span class="file-icon">${fileIcon}</span>
                           ${fileName}
                         </a>

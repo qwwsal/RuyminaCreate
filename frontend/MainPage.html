@@ -171,12 +171,17 @@
             }
           }
           
-          // Если нашли изображение, обрабатываем путь
+          // Если нашли изображение, проверяем его тип
           if (imageUrl) {
-            // Формируем правильный URL для хостинга
-            if (!imageUrl.startsWith('http')) {
-              imageUrl = `${API_URL}${imageUrl}`;
+            // Если это старый локальный путь (/uploads/filename.png) - он больше не работает
+            // Если это уже Cloud URL - используем как есть
+            if (imageUrl.startsWith('/uploads/')) {
+              // Старый локальный путь - нужно заменить на Cloud URL
+              const fileName = imageUrl.replace('/uploads/', '');
+              imageUrl = `https://storage.yandexcloud.net/ruyminacreate/portfolio/${fileName}`;
+              console.log('Конвертирован локальный путь в Cloud URL:', imageUrl);
             }
+            // Если это уже Cloud URL - оставляем как есть
             console.log('Финальный URL изображения:', imageUrl);
           } else {
             imageUrl = './Image/Website.svg';
@@ -209,7 +214,7 @@
       } catch (error) {
         console.error('Ошибка при загрузке кейсов:', error);
         const casesContainer = document.getElementById('portfolioCases');
-        casesContainer.innerHTML = '<div class="cases-error">Не удалось загрузить кейсы. Проверьте подключение к серверу.</div>';
+        casesContainer.innerHTML = '<div class="cases-error">Не удалось загрузить кейсов. Проверьте подключение к серверу.</div>';
       }
     }
   </script>

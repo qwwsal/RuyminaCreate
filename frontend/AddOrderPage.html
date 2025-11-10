@@ -266,16 +266,31 @@
         console.log('Успешный ответ:', result);
         
         orderFeedback.style.color = 'green';
-        orderFeedback.textContent = 'Заказ успешно создан! Перенаправление в профиль...';
+        
+        // Показываем информацию о загруженных файлах
+        let successMessage = 'Заказ успешно создан! ID заказа: ' + result.id;
+        
+        if (result.fileUrls && result.fileUrls.length > 0) {
+          successMessage += '\n\nФайлы загружены в облачное хранилище:';
+          result.fileUrls.forEach((url, index) => {
+            successMessage += `\n- Файл ${index + 1}: ${url}`;
+          });
+        } else if (files.length > 0) {
+          successMessage += '\n\nФайлы загружаются в облачное хранилище...';
+        }
+        
+        successMessage += '\n\nПеренаправление в профиль...';
+        orderFeedback.textContent = successMessage;
+        
         orderForm.reset();
 
         // Очищаем serviceId после успешного заказа
         localStorage.removeItem('selectedServiceId');
 
-        // Через 2 секунды перенаправляем в профиль
+        // Через 3 секунды перенаправляем в профиль (даем время прочитать сообщение)
         setTimeout(() => {
           window.location.href = `./ProfilePage.html?userId=${user.id}`;
-        }, 2000);
+        }, 3000);
 
       } catch (error) {
         console.error('Ошибка создания заказа:', error);
@@ -285,6 +300,8 @@
           orderFeedback.textContent = 'Ошибка сервера: проблема с базой данных. Пожалуйста, сообщите администратору.';
         } else if (error.message.includes('SQLITE_ERROR: no such table: orders')) {
           orderFeedback.textContent = 'Ошибка сервера: таблица заказов не существует. Пожалуйста, сообщите администратору.';
+        } else if (error.message.includes('YC_ACCESS_KEY_ID')) {
+          orderFeedback.textContent = 'Ошибка сервера: проблема с облачным хранилищем. Пожалуйста, сообщите администратору.';
         } else {
           orderFeedback.textContent = 'Ошибка создания заказа: ' + error.message;
         }

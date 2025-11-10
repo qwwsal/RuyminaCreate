@@ -139,6 +139,27 @@
       }
     }
 
+    // Функция для получения правильного URL файла
+    function getFileUrl(filePath) {
+      console.log('Обработка файла:', filePath);
+      
+      // Если это уже Cloud URL - используем как есть
+      if (filePath.startsWith('http')) {
+        return filePath;
+      }
+      
+      // Если это старый локальный путь (/uploads/filename) - конвертируем в Cloud URL
+      if (filePath.startsWith('/uploads/')) {
+        const fileName = filePath.replace('/uploads/', '');
+        const cloudUrl = `https://storage.yandexcloud.net/ruyminacreate/orders/${fileName}`;
+        console.log('Конвертирован локальный путь в Cloud URL:', cloudUrl);
+        return cloudUrl;
+      }
+      
+      // Если это просто имя файла без пути - добавляем к API URL (на случай старых записей)
+      return `${API_URL}/uploads/${filePath}`;
+    }
+
     function renderOrders(orders, filterStatus = null) {
       ordersList.innerHTML = '';
       let filtered = orders;
@@ -163,12 +184,13 @@
           const files = order.file_urls ? JSON.parse(order.file_urls) : [];
           if (files.length) {
             filesHtml = files.map(filePath => {
-              const url = filePath.startsWith('http') ? filePath : `${API_URL}${filePath}`;
+              const url = getFileUrl(filePath);
               const fileName = url.split('/').pop();
-              return `<a href="${url}" target="_blank" rel="noopener noreferrer">${fileName}</a>`;
+              return `<a href="${url}" target="_blank" rel="noopener noreferrer" title="Открыть файл: ${fileName}">${fileName}</a>`;
             }).join(', ');
           }
-        } catch {
+        } catch (error) {
+          console.error('Ошибка при обработке файлов заказа:', error);
           filesHtml = 'Ошибка при загрузке файлов';
         }
 
@@ -275,7 +297,7 @@
         }
 
         const result = await response.json();
-        portfolioFeedback.textContent = 'Запись в портфолио добавлена!';
+        portfolioFeedback.textContent = 'Запись в портфолио добавлена! ID: ' + result.id;
         portfolioFeedback.style.color = 'green';
         portfolioForm.reset();
       } catch (err) {
@@ -318,7 +340,7 @@
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Ошибка добавления услуги');
         
-        serviceFeedback.textContent = 'Услуга успешно добавлена!';
+        serviceFeedback.textContent = 'Услуга успешно добавлена! ID: ' + result.id;
         serviceFeedback.style.color = 'green';
         serviceForm.reset();
       } catch (err) {
