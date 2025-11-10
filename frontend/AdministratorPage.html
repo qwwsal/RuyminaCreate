@@ -68,6 +68,23 @@
       </form>
       <div id="serviceFeedback"></div>
     </section>
+
+    <!-- После секции "Добавить новую услугу" -->
+<section class="section-block" aria-label="Управление дубликатами">
+  <h2>🛠️ Управление дубликатами портфолио</h2>
+  
+  <div class="duplicate-controls">
+    <button id="checkDuplicatesBtn" class="btn-check">🔍 Проверить дубликаты</button>
+    <button id="cleanupDuplicatesBtn" class="btn-cleanup" style="display: none;">🗑️ Удалить дубликаты</button>
+  </div>
+  
+  <div id="duplicatesResults" class="duplicates-results" style="display: none;">
+    <h3>Найдены дубликаты:</h3>
+    <div id="duplicatesList"></div>
+  </div>
+  
+  <div id="cleanupResults" class="cleanup-results" style="display: none;"></div>
+</section>
   </main>
 
   <footer>
@@ -367,6 +384,106 @@
       localStorage.removeItem('user');
       window.location.href = './AutorizationPage.html';
     });
+
+
+        // Элементы для управления дубликатами
+    const checkDuplicatesBtn = document.getElementById('checkDuplicatesBtn');
+    const cleanupDuplicatesBtn = document.getElementById('cleanupDuplicatesBtn');
+    const duplicatesResults = document.getElementById('duplicatesResults');
+    const duplicatesList = document.getElementById('duplicatesList');
+    const cleanupResults = document.getElementById('cleanupResults');
+
+    // Проверка дубликатов
+    checkDuplicatesBtn.addEventListener('click', async () => {
+      try {
+        checkDuplicatesBtn.disabled = true;
+        checkDuplicatesBtn.textContent = '🔍 Проверяем...';
+        
+        const response = await fetch(`${API_URL}/api/portfolio/duplicates`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Ошибка проверки дубликатов');
+        }
+        
+        displayDuplicates(data.duplicates);
+        
+      } catch (error) {
+        console.error('Ошибка проверки дубликатов:', error);
+        showCleanupResult('Ошибка: ' + error.message, true);
+      } finally {
+        checkDuplicatesBtn.disabled = false;
+        checkDuplicatesBtn.textContent = '🔍 Проверить дубликаты';
+      }
+    });
+
+    // Отображение найденных дубликатов
+    function displayDuplicates(duplicates) {
+      if (duplicates.length === 0) {
+        duplicatesList.innerHTML = '<p>✅ Дубликаты не найдены</p>';
+        cleanupDuplicatesBtn.style.display = 'none';
+      } else {
+        duplicatesList.innerHTML = duplicates.map(group => `
+          <div class="duplicate-group">
+            <h4>${group.title}</h4>
+            <p><strong>Количество:</strong> ${group.count} записей</p>
+            <p><strong>ID записей:</strong> <span class="duplicate-ids">${group.ids}</span></p>
+            ${group.description ? `<p><strong>Описание:</strong> ${group.description}</p>` : ''}
+          </div>
+        `).join('');
+        
+        cleanupDuplicatesBtn.style.display = 'inline-block';
+      }
+      
+      duplicatesResults.style.display = 'block';
+    }
+
+    // Удаление дубликатов
+    cleanupDuplicatesBtn.addEventListener('click', async () => {
+      if (!confirm('Вы уверены, что хотите удалить все дубликаты портфолио?\n\nБудут сохранены только самые старые записи (с наименьшими ID).')) {
+        return;
+      }
+      
+      try {
+        cleanupDuplicatesBtn.disabled = true;
+        cleanupDuplicatesBtn.textContent = '🗑️ Удаляем...';
+        
+        const response = await fetch(`${API_URL}/api/portfolio/cleanup-duplicates`, {
+          method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Ошибка удаления дубликатов');
+        }
+        
+        showCleanupResult(`✅ ${data.message}\n\nУдалено записей: ${data.totalDeleted}`);
+        
+        // Сбрасываем интерфейс
+        cleanupDuplicatesBtn.style.display = 'none';
+        duplicatesResults.style.display = 'none';
+        
+      } catch (error) {
+        console.error('Ошибка удаления дубликатов:', error);
+        showCleanupResult('Ошибка: ' + error.message, true);
+      } finally {
+        cleanupDuplicatesBtn.disabled = false;
+        cleanupDuplicatesBtn.textContent = '🗑️ Удалить дубликаты';
+      }
+    });
+
+    // Показать результат очистки
+    function showCleanupResult(message, isError = false) {
+      cleanupResults.innerHTML = message;
+      cleanupResults.style.display = 'block';
+      cleanupResults.className = isError ? 'cleanup-results error' : 'cleanup-results';
+      
+      // Автоматически скрыть через 10 секунд
+      setTimeout(() => {
+        cleanupResults.style.display = 'none';
+      }, 10000);
+    }
   </script>
 </body>
 </html>

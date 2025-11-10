@@ -751,6 +751,116 @@ app.put('/reviews/:id', (req, res) => {
   );
 });
 
+// Эндпоинт для просмотра дубликатов портфолио
+app.get('/api/portfolio/duplicates', (req, res) => {
+  const query = `
+    SELECT title, description, COUNT(*) as count, GROUP_CONCAT(id) as ids
+    FROM portfolio 
+    GROUP BY title, description 
+    HAVING COUNT(*) > 1
+    ORDER BY title
+  `;
+  
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error('❌ DB error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    
+    console.log(`📊 Found ${rows.length} duplicate groups`);
+    res.json({ duplicates: rows });
+  });
+});
+
+// Эндпоинт для удаления дубликатов портфолио
+app.delete('/api/portfolio/cleanup-duplicates', async (req, res) => {
+  try {
+    console.log('🔄 Starting portfolio duplicates cleanup...');
+    
+    // Получаем все дубликаты
+    const query = `
+      SELECT title, description, GROUP_CONCAT(id) as id_list
+      FROM portfolio 
+      GROUP BY title, description 
+      HAVING COUNT(*) > 1
+    `;
+    
+    db.all(query, [], async (err, duplicateGroups) => {
+      if (err) {
+        console.error('❌ DB select error:', err);
+        return res.status(500).json({ error: err.message });
+      }
+      
+      console.log(`📊 Found ${duplicateGroups.length} duplicate groups`);
+      
+      let totalDeleted = 0;
+      const deletionResults = [];
+      
+      // Для каждой группы дубликатов оставляем только первую запись
+      for (const group of duplicateGroups) {
+        const ids = group.id_list.split(',').map(id => parseInt(id));
+        const keepId = Math.min(...ids); // Оставляем запись с наименьшим ID (самую старую)
+        const deleteIds = ids.filter(id => id !== keepId);
+        
+        console.log(`🔄 Processing group: "${group.title}" - Keep: ${keepId}, Delete: ${deleteIds}`);
+        
+        // Удаляем все кроме первой записи
+        for (const id of deleteIds) {
+          await new Promise((resolve, reject) => {
+            db.run('DELETE FROM portfolio WHERE id = ?', [id], function(err) {
+              if (err) reject(err);
+              else {
+                console.log(`✅ Deleted portfolio ${id}`);
+                totalDeleted++;
+                deletionResults.push({
+                  id: id,
+                  title: group.title,
+                  status: 'deleted'
+                });
+                resolve();
+              }
+            });
+          });
+        }
+      }
+      
+      res.json({ 
+        success: true,
+        message: `Удалено ${totalDeleted} дубликатов портфолио`,
+        totalDeleted: totalDeleted,
+        results: deletionResults
+      });
+    });
+    
+  } catch (error) {
+    console.error('❌ Cleanup error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Эндпоинт для удаления конкретной записи портфолио
+app.delete('/api/portfolio/:id', (req, res) => {
+  const id = req.params.id;
+  
+  db.run('DELETE FROM portfolio WHERE id = ?', [id], function(err) {
+    if (err) {
+      console.error('❌ Delete error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Запись портфолио не найдена' });
+    }
+    
+    res.json({ 
+      success: true,
+      message: `Запись портфолио ${id} удалена`,
+      deletedId: id
+    });
+  });
+});
+
+
 // Глобальный обработчик ошибок
 app.use((err, req, res, next) => {
   console.error('Global error handler:', err);

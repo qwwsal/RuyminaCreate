@@ -70,6 +70,86 @@ h2 {
   margin-top: 0;
 }
 
+/* Стили для управления дубликатами */
+.duplicate-controls {
+  margin: 20px 0;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn-check {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-cleanup {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-check:hover {
+  background: #0056b3;
+}
+
+.btn-cleanup:hover {
+  background: #c82333;
+}
+
+.duplicates-results {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.duplicate-group {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 10px 0;
+}
+
+.duplicate-group h4 {
+  margin: 0 0 10px 0;
+  color: #495057;
+}
+
+.duplicate-ids {
+  font-family: monospace;
+  background: #f1f3f4;
+  padding: 8px;
+  border-radius: 4px;
+  margin: 5px 0;
+}
+
+.cleanup-results {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  color: #155724;
+}
+
+.cleanup-results.error {
+  background: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
 /* Стили для кнопок фильтрации */
 #showPendingBtn,
 #showCompletedBtn,
