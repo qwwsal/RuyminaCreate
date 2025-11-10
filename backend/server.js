@@ -488,9 +488,45 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.message || 'Внутренняя ошибка сервера' });
 });
 
-// ИСПРАВЛЕНО: Обработчик для SPA - все остальные GET запросы отправляем на MainPage.html
-app.get('*', (req, res) => {
+// ИСПРАВЛЕНО: Конкретные маршруты для всех страниц вместо проблемного '*'
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/MainPage.html'));
+});
+
+app.get('/MainPage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/MainPage.html'));
+});
+
+app.get('/ServicePage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/ServicePage.html'));
+});
+
+app.get('/PortfolioPage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/PortfolioPage.html'));
+});
+
+app.get('/ReviewsPage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/ReviewsPage.html'));
+});
+
+app.get('/AddOrderPage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/AddOrderPage.html'));
+});
+
+app.get('/AdministratorPage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/AdministratorPage.html'));
+});
+
+app.get('/AutorizationPage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/AutorizationPage.html'));
+});
+
+app.get('/ProfilePage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/ProfilePage.html'));
+});
+
+app.get('/RegisterPage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/RegisterPage.html'));
 });
 
 // Запуск сервера с указанием хоста
