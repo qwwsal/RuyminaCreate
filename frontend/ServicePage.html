@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Услуги Ryumina Create</title>
+  <link rel="stylesheet" href="ServicePageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+<header>
+  <img class="logo" src="image/logo.svg" alt="Логотип" />
+
+  <nav role="navigation" aria-label="Главное меню">
+    <a href="MainPage.html">Главная</a>
+    <a href="ServicePage.html">Услуги</a>
+    <a href="PortfolioPage.html">Портфолио</a>
+    <a href="ReviewsPage.html">Отзывы</a>
+  </nav>
+
+  <a href="#" id="profileLink">
+    <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+  </a>
+</header>
+
+<main>
+  <h1>Услуги, которые я предоставляю</h1>
+  <div class="top-block" aria-label="Ключевые преимущества">
+    <div class="stat" aria-label="100 процентов соблюдение сроков">
+      <span>100<span style="font-size: 18px;">%</span></span><br />
+      <small>соблюдение сроков</small>
+    </div>
+    <div class="stat" aria-label="3 года стаж успешной работы">
+      <span>3<span style="font-size: 18px;">года</span></span><br />
+      <small>стаж успешной работы</small>
+    </div>
+  </div>
+
+  <div id="servicesContainer" aria-label="Список услуг"></div>
+</main>
+
+<footer>
+  <div class="footer-logo">
+    <img class="logo" src="image/logo.svg" />
+  </div>
+  <div>Я в социальных сетях</div>
+  <div class="social-icons" role="list" aria-label="Социальные сети">
+    <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Behance.svg" alt="Behance" />
+    </a>
+    <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/VK.svg" alt="VK" />
+    </a>
+  </div>
+</footer>
+
+<script>
+  const profileLink = document.getElementById('profileLink');
+
+  // Функция для проверки авторизации
+  function checkAuth() {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      return null;
+    }
+    try {
+      return JSON.parse(userStr);
+    } catch (error) {
+      console.error('Ошибка при чтении данных пользователя:', error);
+      return null;
+    }
+  }
+
+  // Функция для проверки администратора
+  function isAdmin(email) {
+    return email ? email.trim().toLowerCase() === 'polina@mail.ru' : false;
+  }
+
+  profileLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    const user = checkAuth();
+    if (!user) {
+      window.location.href = 'RegisterPage.html';
+      return;
+    }
+    if (isAdmin(user.email)) {
+      window.location.href = 'AdministratorPage.html';
+    } else if (user.id) {
+      window.location.href = `ProfilePage.html?userId=${user.id}`;
+    } else {
+      window.location.href = 'RegisterPage.html';
+    }
+  });
+
+  async function loadServices() {
+    try {
+      console.log('Загрузка услуг...');
+      const response = await fetch('http://localhost:3000/services');
+      
+      if (!response.ok) {
+        throw new Error(`Ошибка загрузки услуг: ${response.status}`);
+      }
+
+      const services = await response.json();
+      console.log('Получены услуги:', services);
+      
+      const container = document.getElementById('servicesContainer');
+      container.innerHTML = '';
+
+      if (services.length === 0) {
+        container.textContent = 'Услуги отсутствуют';
+        return;
+      }
+
+      services.forEach(service => {
+        const serviceBlock = document.createElement('section');
+        serviceBlock.className = 'service-item';
+        serviceBlock.setAttribute('data-service-id', service.id);
+
+        serviceBlock.innerHTML = `
+          <div class="left">
+            <h2>${service.name || 'Название услуги'}</h2>
+            ${service.short_description ? `<small>${service.short_description}</small>` : ''}
+            <div class="price">от ${service.price ? service.price.toLocaleString('ru-RU') : '0'} р</div>
+          </div>
+          <div class="right">
+            <p>${service.description || 'Описание услуги'}</p>
+          </div>
+          <a href="#" class="order-button" data-service-id="${service.id}" aria-label="Заказать услугу ${service.name}" style="display: block; margin: 0 auto; text-align: center; width: fit-content;">Заказать услугу</a>
+        `;
+
+        container.appendChild(serviceBlock);
+      });
+
+      // Добавляем обработчик на кнопки заказа
+      document.querySelectorAll('.order-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          
+          const user = checkAuth();
+          if (!user) {
+            alert('Пожалуйста, авторизуйтесь для заказа услуги.');
+            window.location.href = 'AutorizationPage.html';
+            return;
+          }
+          
+          const serviceId = button.getAttribute('data-service-id');
+          console.log('Переход к заказу услуги с ID:', serviceId);
+          
+          if (serviceId) {
+            // Сохраняем serviceId в localStorage перед переходом
+            localStorage.setItem('selectedServiceId', serviceId);
+            console.log('ServiceId сохранен в localStorage:', serviceId);
+            window.location.href = 'AddOrderPage.html';
+          } else {
+            console.error('Service ID не найден');
+            alert('Ошибка: не удалось определить услугу.');
+          }
+        });
+      });
+
+    } catch (error) {
+      console.error('Ошибка загрузки услуг:', error);
+      const container = document.getElementById('servicesContainer');
+      container.innerHTML = `
+        <div class="error-message">
+          <p>Ошибка загрузки услуг</p>
+          <p>${error.message}</p>
+          <button onclick="loadServices()">Попробовать снова</button>
+        </div>
+      `;
+    }
+  }
+
+  // Проверяем авторизацию при загрузке страницы
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('Страница услуг загружена');
+    loadServices();
+  });
+</script>
+</body>
+</html>

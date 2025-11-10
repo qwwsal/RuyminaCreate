@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="RegisterPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+  <header>
+    <img class="logo" src="image/logo.svg" />
+
+    <nav role="navigation" aria-label="Главное меню">
+      <a href="MainPage.html">Главная</a>
+      <a href="ServicePage.html">Услуги</a>
+      <a href="PortfolioPage.html">Портфолио</a>
+      <a href="ReviewsPage.html">Отзывы</a>
+    </nav>
+
+    <a href="#" id="profileLink">
+      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+    </a>
+  </header>
+
+  <div class="container">
+    <h2>Регистрация</h2>
+    <form id="registrationForm" novalidate>
+      <div>
+        <label for="firstName">Имя:</label>
+        <input type="text" id="firstName" name="firstName" placeholder="Введите имя" required />
+        <span class="field-error" id="firstNameError"></span>
+      </div>
+      <div>
+        <label for="lastName">Фамилия:</label>
+        <input type="text" id="lastName" name="lastName" placeholder="Введите фамилию" required />
+        <span class="field-error" id="lastNameError"></span>
+      </div>
+
+      <div>
+        <label for="email">Электронная почта:</label>
+        <input type="email" id="email" name="email" placeholder="Введите email" required />
+        <span class="field-error" id="emailError"></span>
+      </div>
+      <div>
+        <label for="phone">Номер телефона:</label>
+        <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" required />
+        <span class="field-error" id="phoneError"></span>
+      </div>
+
+      <div>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" placeholder="Введите пароль (минимум 6 символов)" required />
+        <span class="field-error" id="passwordError"></span>
+      </div>
+      <div>
+        <label for="confirmPassword">Повторите пароль:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Повторите пароль" required />
+        <span class="field-error" id="confirmPasswordError"></span>
+      </div>
+
+      <div class="error-message" id="error"></div>
+      <button type="submit">Зарегистрироваться</button>
+    </form>
+    <div class="login"><a href="AutorizationPage.html">Вход</a></div>
+  </div>
+
+  <footer>
+  <div class="footer-logo">
+    <img class="logo" src="image/logo.svg" />
+  </div>
+  <div>Я в социальных сетях</div>
+  <div class="social-icons" role="list" aria-label="Социальные сети">
+    <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Behance.svg" alt="Behance" />
+    </a>
+    <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/VK.svg" alt="VK" />
+    </a>
+  </div>
+</footer>
+
+  <script>
+    const form = document.getElementById('registrationForm');
+    const errorDiv = document.getElementById('error');
+    const profileLink = document.getElementById('profileLink');
+
+    // Элементы для ошибок полей
+    const firstNameError = document.getElementById('firstNameError');
+    const lastNameError = document.getElementById('lastNameError');
+    const emailError = document.getElementById('emailError');
+    const phoneError = document.getElementById('phoneError');
+    const passwordError = document.getElementById('passwordError');
+    const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+    // Функции валидации
+    function validateName(name, fieldName) {
+      const nameRegex = /^[a-zA-Zа-яА-ЯёЁ\s\-]+$/;
+      if (!name.trim()) {
+        return `${fieldName} обязателен для заполнения`;
+      }
+      if (!nameRegex.test(name)) {
+        return `${fieldName} может содержать только буквы, пробелы и дефисы`;
+      }
+      if (name.length < 2) {
+        return `${fieldName} должен содержать минимум 2 символа`;
+      }
+      return '';
+    }
+
+    function validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email.trim()) {
+        return 'Email обязателен для заполнения';
+      }
+      if (!emailRegex.test(email)) {
+        return 'Введите корректный email адрес (например: example@mail.ru)';
+      }
+      return '';
+    }
+
+    function validatePhone(phone) {
+      const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+      const digitsOnly = phone.replace(/\D/g, '');
+      
+      if (!phone.trim()) {
+        return 'Телефон обязателен для заполнения';
+      }
+      if (!phoneRegex.test(phone)) {
+        return 'Телефон может содержать только цифры, пробелы, +, -, ( и )';
+      }
+      if (digitsOnly.length < 10) {
+        return 'Телефон должен содержать минимум 10 цифр';
+      }
+      return '';
+    }
+
+    function validatePassword(password) {
+      if (!password) {
+        return 'Пароль обязателен для заполнения';
+      }
+      if (password.length < 6) {
+        return 'Пароль должен содержать минимум 6 символов';
+      }
+      return '';
+    }
+
+    function validateConfirmPassword(password, confirmPassword) {
+      if (!confirmPassword) {
+        return 'Подтверждение пароля обязательно';
+      }
+      if (password !== confirmPassword) {
+        return 'Пароли не совпадают';
+      }
+      return '';
+    }
+
+    // Функция для очистки ошибок
+    function clearErrors() {
+      firstNameError.textContent = '';
+      lastNameError.textContent = '';
+      emailError.textContent = '';
+      phoneError.textContent = '';
+      passwordError.textContent = '';
+      confirmPasswordError.textContent = '';
+      errorDiv.textContent = '';
+      
+      // Убираем классы ошибок
+      const inputs = form.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.classList.remove('error-field', 'success-field');
+      });
+    }
+
+    // Функция для показа ошибки поля
+    function showFieldError(input, errorElement, message) {
+      input.classList.add('error-field');
+      input.classList.remove('success-field');
+      errorElement.textContent = message;
+    }
+
+    // Функция для показа успешной валидации
+    function showFieldSuccess(input) {
+      input.classList.remove('error-field');
+      input.classList.add('success-field');
+    }
+
+    // Валидация при вводе
+    document.getElementById('firstName').addEventListener('input', function() {
+      const error = validateName(this.value, 'Имя');
+      if (error) {
+        showFieldError(this, firstNameError, error);
+      } else {
+        showFieldSuccess(this);
+        firstNameError.textContent = '';
+      }
+    });
+
+    document.getElementById('lastName').addEventListener('input', function() {
+      const error = validateName(this.value, 'Фамилия');
+      if (error) {
+        showFieldError(this, lastNameError, error);
+      } else {
+        showFieldSuccess(this);
+        lastNameError.textContent = '';
+      }
+    });
+
+    document.getElementById('email').addEventListener('input', function() {
+      const error = validateEmail(this.value);
+      if (error) {
+        showFieldError(this, emailError, error);
+      } else {
+        showFieldSuccess(this);
+        emailError.textContent = '';
+      }
+    });
+
+    document.getElementById('phone').addEventListener('input', function() {
+      const error = validatePhone(this.value);
+      if (error) {
+        showFieldError(this, phoneError, error);
+      } else {
+        showFieldSuccess(this);
+        phoneError.textContent = '';
+      }
+    });
+
+    document.getElementById('password').addEventListener('input', function() {
+      const error = validatePassword(this.value);
+      if (error) {
+        showFieldError(this, passwordError, error);
+      } else {
+        showFieldSuccess(this);
+        passwordError.textContent = '';
+      }
+      
+      // Также валидируем подтверждение пароля
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (confirmPassword) {
+        const confirmError = validateConfirmPassword(this.value, confirmPassword);
+        if (confirmError) {
+          showFieldError(document.getElementById('confirmPassword'), confirmPasswordError, confirmError);
+        } else {
+          showFieldSuccess(document.getElementById('confirmPassword'));
+          confirmPasswordError.textContent = '';
+        }
+      }
+    });
+
+    document.getElementById('confirmPassword').addEventListener('input', function() {
+      const password = document.getElementById('password').value;
+      const error = validateConfirmPassword(password, this.value);
+      if (error) {
+        showFieldError(this, confirmPasswordError, error);
+      } else {
+        showFieldSuccess(this);
+        confirmPasswordError.textContent = '';
+      }
+    });
+
+    // Запрет ввода цифр в поля имени и фамилии
+    document.getElementById('firstName').addEventListener('keypress', function(e) {
+      const char = String.fromCharCode(e.keyCode || e.which);
+      if (/[0-9]/.test(char)) {
+        e.preventDefault();
+      }
+    });
+
+    document.getElementById('lastName').addEventListener('keypress', function(e) {
+      const char = String.fromCharCode(e.keyCode || e.which);
+      if (/[0-9]/.test(char)) {
+        e.preventDefault();
+      }
+    });
+
+    // Запрет ввода букв в поле телефона
+    document.getElementById('phone').addEventListener('keypress', function(e) {
+      const char = String.fromCharCode(e.keyCode || e.which);
+      if (/[a-zA-Zа-яА-Я]/.test(char)) {
+        e.preventDefault();
+      }
+    });
+
+    // Функция для нормализации email (удаление пробелов)
+    function normalizeEmail(email) {
+      return email ? email.trim().toLowerCase() : '';
+    }
+
+    // Функция для проверки администратора
+    function isAdmin(email) {
+      return normalizeEmail(email) === 'polina@mail.ru';
+    }
+
+    // Обработчик для кнопки профиля в хедере
+    profileLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        window.location.href = 'RegisterPage.html';
+        return;
+      }
+      
+      try {
+        const user = JSON.parse(userStr);
+        if (isAdmin(user.email)) {
+          window.location.href = 'AdministratorPage.html';
+        } else if (user.id) {
+          window.location.href = `ProfilePage.html?userId=${user.id}`;
+        } else {
+          window.location.href = 'RegisterPage.html';
+        }
+      } catch (error) {
+        console.error('Ошибка при чтении данных пользователя:', error);
+        window.location.href = 'RegisterPage.html';
+      }
+    });
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      clearErrors();
+
+      const firstName = form.firstName.value.trim();
+      const lastName = form.lastName.value.trim();
+      const email = form.email.value.trim();
+      const phone = form.phone.value.trim();
+      const password = form.password.value;
+      const confirmPassword = form.confirmPassword.value;
+
+      // Валидация всех полей
+      const firstNameValidation = validateName(firstName, 'Имя');
+      const lastNameValidation = validateName(lastName, 'Фамилия');
+      const emailValidation = validateEmail(email);
+      const phoneValidation = validatePhone(phone);
+      const passwordValidation = validatePassword(password);
+      const confirmPasswordValidation = validateConfirmPassword(password, confirmPassword);
+
+      let hasErrors = false;
+
+      if (firstNameValidation) {
+        showFieldError(form.firstName, firstNameError, firstNameValidation);
+        hasErrors = true;
+      }
+      if (lastNameValidation) {
+        showFieldError(form.lastName, lastNameError, lastNameValidation);
+        hasErrors = true;
+      }
+      if (emailValidation) {
+        showFieldError(form.email, emailError, emailValidation);
+        hasErrors = true;
+      }
+      if (phoneValidation) {
+        showFieldError(form.phone, phoneError, phoneValidation);
+        hasErrors = true;
+      }
+      if (passwordValidation) {
+        showFieldError(form.password, passwordError, passwordValidation);
+        hasErrors = true;
+      }
+      if (confirmPasswordValidation) {
+        showFieldError(form.confirmPassword, confirmPasswordError, confirmPasswordValidation);
+        hasErrors = true;
+      }
+
+      if (hasErrors) {
+        errorDiv.textContent = 'Пожалуйста, исправьте ошибки в форме';
+        return;
+      }
+
+      try {
+        console.log('=== Регистрация начата ===');
+        const response = await fetch('http://localhost:3000/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firstName, lastName, email, phone, password }),
+        });
+
+        const data = await response.json();
+        console.log('=== Ответ сервера при регистрации ===');
+        console.log('Полный ответ:', data);
+
+        if (!response.ok) {
+          errorDiv.textContent = data.error || 'Ошибка регистрации';
+          return;
+        }
+
+        console.log('Регистрация прошла успешно!');
+
+        // Сохраняем полные данные пользователя в localStorage
+        const userData = {
+          id: data.userId || data.id,
+          email: normalizeEmail(email),
+          firstName: firstName,
+          lastName: lastName,
+          phone: phone,
+          isAdmin: isAdmin(email) ? 1 : 0
+        };
+
+        localStorage.setItem('user', JSON.stringify(userData));
+        console.log('Данные пользователя сохранены:', userData);
+
+        // Переход сразу на страницу профиля пользователя
+        const userId = data.userId || data.id;
+        if (userId) {
+          console.log('Переход на страницу профиля с ID:', userId);
+          window.location.href = `ProfilePage.html?userId=${userId}`;
+        } else {
+          errorDiv.textContent = 'Не удалось получить ID пользователя для перехода';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Ошибка сети. Попробуйте позже.';
+        console.error('Ошибка при регистрации:', error);
+      }
+    });
+
+    // Проверяем авторизацию при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      const userStr = localStorage.getItem('user');
+      console.log('=== Страница регистрации загружена ===');
+      console.log('Данные пользователя в localStorage:', userStr);
+      
+      // Если пользователь уже авторизован, перенаправляем на профиль
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user.id) {
+            console.log('Пользователь уже авторизован, перенаправляем на профиль');
+            window.location.href = `ProfilePage.html?userId=${user.id}`;
+          }
+        } catch (error) {
+          console.error('Ошибка при чтении данных пользователя:', error);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

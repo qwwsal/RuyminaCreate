@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ryumina Create</title>
+  <link rel="stylesheet" href="MainPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+  <header>
+    <img class="logo" src="image/logo.svg" />
+
+    <nav role="navigation" aria-label="Главное меню">
+      <a href="MainPage.html">Главная</a>
+      <a href="ServicePage.html">Услуги</a>
+      <a href="PortfolioPage.html">Портфолио</a>
+      <a href="ReviewsPage.html">Отзывы</a>
+    </nav>
+
+    <a href="#" id="profileLink">
+      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+    </a>
+  </header>
+
+  <main>
+    <img class="main-block" src="image/MainBlock.svg" />
+
+    <section class="red-info-block">
+      <p>Меня зовут Полина, я начинающий программист с широкими знаниями в различных языках программирования.
+      Я создаю современные и функциональные сайты, разрабатываю полиграфическую продукцию и готовлю яркие, информативные презентации. 
+      Моя цель — помочь вам реализовать ваши идеи с помощью качественного и привлекательного дизайна и технологий. 
+      В моём портфолио вы найдёте примеры работ, которые демонстрируют мой профессионализм и творческий подход.</p>
+    </section>
+
+    <section class="about-me">
+      <h1>ОБО МНЕ</h1>
+      <img class="polina-text" src="image/polinatext.svg" />
+      <section class="reasons">
+        <div class="reason">
+          <h1>3 года</h1>
+          <div class="subtitle">стаж успешной работы</div>
+        </div>
+        <div class="reason">
+          <h1>153</h1>
+          <div class="subtitle">клиента из зарубежных стран</div>
+        </div>
+        <div class="reason">
+          <h1>2к</h1>
+          <div class="subtitle">решений для бизнеса</div>
+        </div>
+        <div class="reason">
+          <h1>100%</h1>
+          <div class="subtitle">соблюдение сроков</div>
+        </div>
+      </section>
+    </section>
+
+    <section class="cases-section" aria-labelledby="casesTitle">
+      <h1>КЕЙСЫ</h1>
+      <div class="cases-grid" id="portfolioCases">
+        <!-- Динамически загружаемые кейсы из портфолио -->
+        <div class="cases-loading">Загрузка кейсов...</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+  <div class="footer-logo">
+    <img class="logo" src="image/logo.svg" />
+  </div>
+  <div>Я в социальных сетях</div>
+  <div class="social-icons" role="list" aria-label="Социальные сети">
+    <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Behance.svg" alt="Behance" />
+    </a>
+    <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/VK.svg" alt="VK" />
+    </a>
+  </div>
+</footer>
+
+  <script>
+    const profileLink = document.getElementById('profileLink');
+
+    profileLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        window.location.href = 'RegisterPage.html';
+        return;
+      }
+      const user = JSON.parse(userStr);
+      if (user.email && user.email.toLowerCase() === 'polina@mail.ru') {
+        window.location.href = 'AdministratorPage.html';
+      } else if (user.id) {
+        window.location.href = `ProfilePage.html?userId=${user.id}`;
+      } else {
+        window.location.href = 'RegisterPage.html';
+      }
+    });
+
+    // Загрузка последних кейсов из портфолио
+    document.addEventListener('DOMContentLoaded', function() {
+      loadPortfolioCases();
+    });
+
+    async function loadPortfolioCases() {
+      try {
+        const casesContainer = document.getElementById('portfolioCases');
+        casesContainer.innerHTML = '<div class="cases-loading">Загрузка кейсов...</div>';
+
+        console.log('Начало загрузки кейсов...');
+        const response = await fetch('http://localhost:3000/portfolio?_sort=id&_order=desc&_limit=3');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const portfolioItems = await response.json();
+        console.log('Получены данные портфолио:', portfolioItems);
+        
+        const itemsToShow = portfolioItems.slice(0, 3);
+        
+        if (itemsToShow.length === 0) {
+          casesContainer.innerHTML = '<div class="cases-error">Портфолио пока пустое</div>';
+          return;
+        }
+
+        casesContainer.innerHTML = '';
+        
+        itemsToShow.forEach((item, index) => {
+          console.log(`Обрабатываем элемент ${index + 1}:`, item);
+          
+          const caseItem = document.createElement('div');
+          caseItem.className = 'case-item';
+          caseItem.tabIndex = 0;
+          caseItem.setAttribute('aria-label', `Кейс: ${item.title}`);
+          
+          let imageUrl = '';
+          let fileName = '';
+          
+          // Обрабатываем image_urls
+          if (item.image_urls) {
+            console.log('image_urls для элемента:', item.image_urls);
+            
+            if (Array.isArray(item.image_urls) && item.image_urls.length > 0) {
+              imageUrl = item.image_urls[0];
+              console.log('Берем первую картинку из массива:', imageUrl);
+            } else if (typeof item.image_urls === 'string') {
+              try {
+                const parsedUrls = JSON.parse(item.image_urls);
+                if (Array.isArray(parsedUrls) && parsedUrls.length > 0) {
+                  imageUrl = parsedUrls[0];
+                  console.log('Берем первую картинку из JSON строки:', imageUrl);
+                } else {
+                  imageUrl = item.image_urls;
+                  console.log('Используем строку как есть:', imageUrl);
+                }
+              } catch (e) {
+                imageUrl = item.image_urls;
+                console.log('Используем строку как есть (не JSON):', imageUrl);
+              }
+            }
+          }
+          
+          // Если нашли изображение, обрабатываем путь
+          if (imageUrl) {
+            // Извлекаем имя файла из пути
+            fileName = imageUrl.split('/').pop();
+            console.log('Имя файла:', fileName);
+            
+            // Формируем правильный URL
+            imageUrl = `http://localhost:3001/backend/uploads/${fileName}`;
+            console.log('Финальный URL изображения:', imageUrl);
+          } else {
+            imageUrl = 'image/Website.svg';
+            console.log('Изображение не найдено, используем заглушку');
+          }
+          
+          console.log(`Создаем кейс ${index + 1} с изображением:`, imageUrl);
+          
+          caseItem.innerHTML = `
+            <img src="${imageUrl}" alt="${item.title}" 
+                 onerror="console.log('Ошибка загрузки изображения для ${item.title}:', this.src); this.src='image/Website.svg'" />
+            <div class="case-label">${item.title}</div>
+          `;
+          
+          caseItem.addEventListener('click', function() {
+            window.location.href = 'PortfolioPage.html';
+          });
+          
+          caseItem.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              window.location.href = 'PortfolioPage.html';
+            }
+          });
+          
+          casesContainer.appendChild(caseItem);
+        });
+        
+        console.log('Кейсы успешно загружены и отображены');
+        
+      } catch (error) {
+        console.error('Ошибка при загрузке кейсов:', error);
+        const casesContainer = document.getElementById('portfolioCases');
+        casesContainer.innerHTML = '<div class="cases-error">Не удалось загрузить кейсы. Проверьте подключение к серверу.</div>';
+      }
+    }
+  </script>
+</body>
+</html>

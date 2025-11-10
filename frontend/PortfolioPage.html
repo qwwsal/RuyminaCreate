@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Мои работы</title>
+  <link rel="stylesheet" href="PortfolioPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+  <header>
+    <img class="logo" src="image/logo.svg" alt="Логотип" />
+
+    <nav role="navigation" aria-label="Главное меню">
+      <a href="MainPage.html">Главная</a>
+      <a href="ServicePage.html">Услуги</a>
+      <a href="PortfolioPage.html">Портфолио</a>
+      <a href="ReviewsPage.html">Отзывы</a>
+    </nav>
+
+    <a href="#" id="profileLink">
+      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+    </a>
+  </header>
+
+  <h2>Мои работы</h2>
+
+  <div class="work-summary">
+    <div class="summary-item">
+      <div class="number">100%</div>
+      <div class="label">соблюдение сроков</div>
+    </div>
+    <div class="summary-item">
+      <div class="number">3 года</div>
+      <div class="label">стаж успешной работы</div>
+    </div>
+  </div>
+
+  <div id="portfolioContainer"></div>
+
+  <footer>
+  <div class="footer-logo">
+    <img class="logo" src="image/logo.svg" />
+  </div>
+  <div>Я в социальных сетях</div>
+  <div class="social-icons" role="list" aria-label="Социальные сети">
+    <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Behance.svg" alt="Behance" />
+    </a>
+    <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/VK.svg" alt="VK" />
+    </a>
+  </div>
+</footer>
+
+<script>
+  async function loadPortfolio() {
+    try {
+      const response = await fetch('http://localhost:3000/portfolio');
+      if (!response.ok) throw new Error('Ошибка загрузки портфолио');
+
+      const items = await response.json();
+      console.log('Portfolio items:', items);
+      const container = document.getElementById('portfolioContainer');
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        container.textContent = 'Записи в портфолио отсутствуют';
+        return;
+      }
+
+      items.forEach(item => {
+        let images = [];
+        try {
+          images = item.image_urls ? JSON.parse(item.image_urls) : [];
+        } catch {
+          images = [];
+        }
+
+        const fullImageUrls = images.map(src => {
+          if (/^(https?:)?\/\//.test(src)) return src;
+          return `http://localhost:3000${src}`;
+        });
+
+        const block = document.createElement('div');
+        block.className = 'catalog-block';
+
+        block.innerHTML = `
+          <div class="catalog-title">${item.title}</div>
+          <div class="catalog-description">${item.description || ''}</div>
+          <div class="catalog-images">
+            <button class="slider-button prev" aria-label="Предыдущее изображение">‹</button>
+            <button class="slider-button next" aria-label="Следующее изображение">›</button>
+            ${fullImageUrls.map((url, i) => `<img src="${url}" alt="Изображение ${i+1}" class="${i === 0 ? 'active' : ''}" />`).join('')}
+          </div>
+        `;
+
+        container.appendChild(block);
+
+        initSlider(block.querySelector('.catalog-images'));
+      });
+    } catch (error) {
+      console.error(error);
+      document.getElementById('portfolioContainer').textContent = 'Ошибка загрузки портфолио';
+    }
+  }
+
+  function initSlider(slider) {
+    if (!slider) return;
+    const images = slider.querySelectorAll('img');
+    if (images.length === 0) return;
+
+    let currentIndex = 0;
+
+    const showSlide = index => {
+      images.forEach((img, i) => {
+        img.classList.toggle('active', i === index);
+      });
+    };
+
+    slider.querySelector('.prev').addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      showSlide(currentIndex);
+    });
+    slider.querySelector('.next').addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      showSlide(currentIndex);
+    });
+  }
+
+  document.getElementById('profileLink').addEventListener('click', e => {
+    e.preventDefault();
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      window.location.href = 'RegisterPage.html';
+      return;
+    }
+
+    const user = JSON.parse(userStr);
+    if (user.email && user.email.toLowerCase() === 'polina@mail.ru') {
+      window.location.href = 'AdministratorPage.html';
+    } else if (user.id) {
+      window.location.href = `ProfilePage.html?userId=${user.id}`;
+    } else {
+      window.location.href = 'RegisterPage.html';
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', loadPortfolio);
+</script>
+
+</body>
+</html>

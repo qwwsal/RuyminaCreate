@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Вход</title>
+  <link rel="stylesheet" href="AutorizationPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+
+  <header>
+    <img class="logo" src="image/logo.svg" />
+
+    <nav role="navigation" aria-label="Главное меню">
+      <a href="MainPage.html">Главная</a>
+      <a href="ServicePage.html">Услуги</a>
+      <a href="PortfolioPage.html">Портфолио</a>
+      <a href="ReviewsPage.html">Отзывы</a>
+    </nav>
+
+    <a href="#" id="profileLink">
+      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+    </a>
+  </header>
+
+  <div class="container">
+    <h2>Вход</h2>
+    <form id="loginForm" novalidate>
+      <label for="email">Электронная почта:</label>
+      <input type="email" id="email" name="email" placeholder="Введите email" required />
+
+      <label for="password">Пароль:</label>
+      <input type="password" id="password" name="password" placeholder="Введите пароль" required />
+
+      <div class="error-message" id="error"></div>
+      <button type="submit">Войти</button>
+    </form>
+    <div class="register-link">
+      <a href="RegisterPage.html">Нет аккаунта? Зарегистрироваться</a>
+    </div>
+  </div>
+
+  <footer>
+  <div class="footer-logo">
+    <img class="logo" src="image/logo.svg" />
+  </div>
+  <div>Я в социальных сетях</div>
+  <div class="social-icons" role="list" aria-label="Социальные сети">
+    <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Behance.svg" alt="Behance" />
+    </a>
+    <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/VK.svg" alt="VK" />
+    </a>
+  </div>
+</footer>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('error');
+    const profileLink = document.getElementById('profileLink');
+
+    // Функция для нормализации email (удаление пробелов)
+    function normalizeEmail(email) {
+      return email ? email.trim().toLowerCase() : '';
+    }
+
+    // Функция для проверки администратора
+    function isAdmin(user) {
+      // Проверяем поле isAdmin из ответа сервера
+      if (user.isAdmin !== undefined) {
+        return user.isAdmin === 1 || user.isAdmin === true;
+      }
+      // Если поля isAdmin нет, проверяем по email
+      return normalizeEmail(user.email) === 'polina@mail.ru';
+    }
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      errorDiv.textContent = '';
+
+      const email = form.email.value.trim();
+      const password = form.password.value;
+
+      if (!email || !password) {
+        errorDiv.textContent = 'Пожалуйста, заполните все поля';
+        return;
+      }
+
+      try {
+        console.log('=== Form submission started ===');
+        console.log('Sending email:', email, 'password:', password);
+
+        const response = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        console.log('=== Server response received ===');
+        console.log('Full server response:', data);
+        console.log('User ID from server:', data.id);
+        console.log('isAdmin from server:', data.isAdmin);
+
+        if (!response.ok) {
+          errorDiv.textContent = data.error || 'Неверный email или пароль';
+          return;
+        }
+
+        // Нормализуем email перед сохранением
+        if (data.email) {
+          data.email = normalizeEmail(data.email);
+        }
+
+        // Сохраняем данные пользователя в localStorage
+        localStorage.setItem('user', JSON.stringify(data));
+        console.log('=== User saved to localStorage ===');
+        console.log('Saved user data:', data);
+
+        // ПЕРЕНАПРАВЛЕНИЕ В ЗАВИСИМОСТИ ОТ РОЛИ
+        console.log('=== Starting redirect after login ===');
+        console.log('User ID:', data.id);
+        console.log('isAdmin field:', data.isAdmin);
+        console.log('Is admin (calculated):', isAdmin(data));
+        
+        if (isAdmin(data)) {
+          // Админ - сразу на админскую страницу
+          console.log('Redirecting to ADMIN page');
+          window.location.href = 'AdministratorPage.html';
+        } else {
+          // Обычный пользователь - СРАЗУ НА ПРОФИЛЬ БЕЗ ДИАЛОГА
+          console.log('Redirecting to PROFILE page');
+          window.location.href = `ProfilePage.html?userId=${data.id}`;
+        }
+
+      } catch (error) {
+        errorDiv.textContent = 'Ошибка сети. Попробуйте позже.';
+        console.error('Ошибка при входе:', error);
+      }
+    });
+
+    // Кнопка профиля в шапке
+    profileLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('=== Profile link clicked ===');
+      
+      const userStr = localStorage.getItem('user');
+      console.log('Raw user data from localStorage:', userStr);
+      
+      if (!userStr) {
+        console.log('No user data in localStorage');
+        window.location.href = 'RegisterPage.html';
+        return;
+      }
+      
+      try {
+        const user = JSON.parse(userStr);
+        console.log('Parsed user data:', user);
+        console.log('User ID from localStorage:', user.id);
+        
+        if (isAdmin(data)) {
+  // Админ - сразу на админскую страницу
+  console.log('Redirecting to ADMIN page');
+  window.location.href = 'AdministratorPage.html';
+} else {
+  // Обычный пользователь - СРАЗУ НА ПРОФИЛЬ БЕЗ ДИАЛОГА
+  console.log('Redirecting to PROFILE page');
+  window.location.href = `ProfilePage.html?userId=${data.id}`;
+}
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        window.location.href = 'RegisterPage.html';
+      }
+    });
+
+    // Проверяем авторизацию при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      const userStr = localStorage.getItem('user');
+      console.log('=== Page loaded ===');
+      console.log('Initial localStorage user data:', userStr);
+      
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user.email) {
+            form.email.value = user.email;
+          }
+        } catch (error) {
+          console.error('Ошибка при чтении данных пользователя:', error);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

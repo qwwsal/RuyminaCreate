@@ -1,0 +1,391 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #fff;
+      color: #750104;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    header {
+      background: #750104;
+      color: white;
+      padding: 15px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .logo span {
+      font-weight: 900;
+      font-size: 30px;
+    }
+    nav {
+      display: flex;
+      gap: 80px;
+      font-size: 16px;
+    }
+    nav a {
+      color: white;
+      font-weight: 600px;
+    }
+    .user-icon {
+      width: 24px;
+      height: 24px;
+      fill: white;
+      cursor: pointer;
+    }
+
+    main {
+      position: relative;
+    }
+
+    .top-text {
+      font-weight: 1000;
+      font-size: 150px;
+      line-height: 1.1;
+      margin-bottom: 40px;
+      color: #980002;
+      /* color: linear-gradient(90deg,rgba(152, 0, 2, 1) 0%, rgba(152, 0, 2, 1) 50%, rgba(50, 0, 1, 1) 100%); */
+    }
+
+    /* Logo with dashed path */
+    .main-block {
+      width: 100%;
+    }
+   
+    .red-info-block{
+      width: 100%;
+      background: #980002;
+      background: linear-gradient(90deg,rgba(152, 0, 2, 1) 0%, rgba(50, 0, 1, 1) 100%);  
+      height: auto;
+      color: #f5f5f5;
+      text-align: center;
+      padding: 60px 200px;
+      font-size: 26px;
+      border-radius: 20px;
+    }
+
+    .about-me {
+      text-align: center;
+      align-items: center;
+    }
+    .about-me h1{
+      margin: 90px auto 15px auto;
+            font-size: 90px;
+    }
+    .polina-text{
+      width: 100%;
+    }
+
+    .section-why-me {
+      text-align: center;
+      margin-bottom: 60px;
+      margin-top: 120px;
+    }
+    .section-why-me h2 {
+      font-weight: 900;
+      font-size: 80px;
+      margin-bottom: 40px;
+    }
+
+    /* Reason boxes container */
+  .reasons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.reason {
+  position: relative;
+  background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(152, 0, 2, 1) 50%, rgba(50, 0, 1, 1) 100%);
+  border-radius: 12px;
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  
+  /* Квадрат с помощью padding */
+  aspect-ratio: 1 / 1; /* Попробуйте с этим; это лучше, чем сложные хаки с padding-top */
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.reason h1 {
+  margin: 0;
+  font-size: 48px;
+  font-weight: 900;
+}
+
+.reason .subtitle {
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+
+    /* Cases section */
+    .cases-section {
+      width: 100%;
+      text-align: center;
+      align-items: center;
+      padding-bottom: 90px;
+    }
+
+    .cases-section h1{
+      margin: 90px auto 15px auto;
+            font-size: 90px;
+    }
+
+    .cases-title {
+      font-weight: 900;
+      font-size: 48px;
+      color: #750104;
+    }
+
+    .cases-grid {
+  display: flex;
+  gap: 30px;
+  border-radius: 20px;
+  background: transparent;
+  padding: 0;
+  justify-content: center;
+  max-width: 1200px; /* Увеличили максимальную ширину */
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.case-item {
+  position: relative;
+  flex: 0 1 calc(33.333% - 20px); /* 3 колонки с учетом отступов */
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  max-width: 380px; /* Немного уменьшили максимальную ширину для 3 колонок */
+  min-width: 300px; /* Минимальная ширина */
+  box-sizing: border-box;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.case-item img {
+  width: 100%;
+  height: 250px;
+  display: block;
+  filter: brightness(0.7);
+  transition: filter 0.3s ease;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.case-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.case-item:hover img {
+  filter: brightness(1);
+}
+
+.case-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: 900;
+  font-size: 22px; /* Чуть уменьшили шрифт для 3 колонок */
+  text-shadow: 3px 3px 5px #400000bb;
+  pointer-events: none;
+  text-align: center;
+  width: 90%;
+  word-wrap: break-word;
+  padding: 0 10px;
+}
+
+/* Стили для состояния загрузки и ошибок */
+.cases-loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #750104;
+  width: 100%;
+}
+
+.cases-error {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #750104;
+  background: rgba(255, 0, 0, 0.1);
+  border-radius: 12px;
+  margin: 20px auto;
+  max-width: 500px;
+  width: 100%;
+}
+
+    footer {
+      background: #750104;
+      color: white;
+      display: flex;
+      width: 100%;
+      margin: 0 auto;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      font-size: 16px;
+      font-weight: 600;
+      height: 150px;
+      padding: 0 80px;
+    }
+
+    .footer-logo {
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      cursor: default;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 25px;
+    }
+
+    .social-icons img {
+      fill: white;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      transition: fill 0.3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .top-text {
+        font-size: 44px;
+      }
+      .section-why-me h2, .cases-title, .section-what-can h2 {
+        font-size: 36px;
+      }
+      .floating-logo {
+        top: 70px;
+        right: 20px;
+        width: 80px;
+        height: 80px;
+        font-size: 12px;
+      }
+      .wave-text-container {
+        width: 100%;
+        font-size: 14px;
+      }
+      main {
+        margin: 30px 10px 60px;
+      }
+      
+      /* На планшетах 2 колонки */
+      .cases-grid {
+        gap: 20px;
+      }
+      .case-item {
+        flex: 0 1 calc(50% - 10px); /* 2 колонки на планшетах */
+        max-width: none;
+      }
+      
+      footer {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      .photo-woman {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .cases-grid {
+        flex-direction: column;
+        gap: 20px;
+      }
+      .case-item {
+        flex: 0 1 100%; /* 1 колонка на мобильных */
+        max-width: 100%;
+      }
+      .case-item img {
+        height: 200px;
+      }
+      .case-label {
+        font-size: 20px;
+      }
+      
+      /* Адаптивность для reasons на мобильных */
+      .reasons {
+        grid-template-columns: repeat(2, 1fr); /* 2 колонки на планшетах */
+        gap: 15px;
+        padding: 0 15px;
+      }
+      
+      footer {
+        padding: 20px;
+        height: auto;
+      }
+    }
+    
+    /* Дополнительные медиа-запросы для очень маленьких экранов */
+    @media (max-width: 600px) {
+      .reasons {
+        grid-template-columns: 1fr; /* 1 колонка на мобильных */
+      }
+      
+      .red-info-block {
+        padding: 40px 20px;
+        font-size: 18px;
+      }
+      
+      .cases-section h1 {
+        font-size: 60px;
+        margin: 60px auto 15px auto;
+      }
+      
+      .about-me h1 {
+        font-size: 60px;
+        margin: 60px auto 15px auto;
+      }
+      
+      header {
+        padding: 15px 20px;
+      }
+      
+      nav {
+        gap: 30px;
+      }
+    }
+    
+    /* Для очень широких экранов */
+    @media (min-width: 1400px) {
+      .cases-grid {
+        max-width: 1400px;
+      }
+      .case-item {
+        max-width: 420px;
+      }
+    }

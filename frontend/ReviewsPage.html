@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ryumina Create - Отзывы</title>
+  <link rel="stylesheet" href="ReviewsPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+  <header>
+    <img class="logo" src="image/logo.svg" />
+
+    <nav role="navigation" aria-label="Главное меню">
+      <a href="MainPage.html">Главная</a>
+      <a href="ServicePage.html">Услуги</a>
+      <a href="PortfolioPage.html">Портфолио</a>
+      <a href="ReviewsPage.html">Отзывы</a>
+    </nav>
+
+    <a href="#" id="profileLink">
+      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+    </a>
+  </header>
+
+  <main>
+    <section class="review-section">
+      <!-- Статистика отзывов -->
+      <div class="review-stats" id="reviewStats" style="display: none;">
+        <div class="overall-rating" id="overallRating">0.0</div>
+        <div class="rating-stars-large" id="overallStars"></div>
+        <div class="reviews-count" id="reviewsCount">0 отзывов</div>
+        <div class="rating-breakdown" id="ratingBreakdown"></div>
+      </div>
+
+      <!-- Форма добавления отзыва (показывается только авторизованным пользователям с данными заказа) -->
+      <div class="review-form-container" id="reviewFormContainer" style="display: none;">
+        <h3 id="reviewFormTitle">Оставить отзыв</h3>
+        <form id="reviewForm">
+          <div class="form-group">
+            <label for="serviceDisplay">Услуга:</label>
+            <input type="text" id="serviceDisplay" readonly style="background: #f8f9fa;">
+          </div>
+          
+          <div class="form-group">
+            <label>Оценка:</label>
+            <div class="rating-stars" id="ratingStars">
+              <span class="star" data-rating="1">★</span>
+              <span class="star" data-rating="2">★</span>
+              <span class="star" data-rating="3">★</span>
+              <span class="star" data-rating="4">★</span>
+              <span class="star" data-rating="5">★</span>
+            </div>
+            <input type="hidden" id="rating" name="rating" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="reviewText">Текст отзыва:</label>
+            <textarea id="reviewText" name="reviewText" placeholder="Поделитесь вашими впечатлениями о услуге..." required></textarea>
+          </div>
+          
+          <button type="submit" class="submit-btn" id="submitReview">Отправить отзыв</button>
+          <a href="ProfilePage.html" class="back-to-profile">Вернуться в профиль</a>
+        </form>
+        <div id="reviewFeedback"></div>
+      </div>
+
+      <!-- Сообщение о существующем отзыве -->
+      <div class="existing-review-message" id="existingReviewMessage" style="display: none;">
+        <h3>Вы уже оставили отзыв на этот заказ</h3>
+        <div id="existingReviewDetails"></div>
+        <a href="ProfilePage.html" class="back-to-profile">Вернуться в профиль</a>
+      </div>
+
+      <!-- Приглашение авторизоваться (показывается неавторизованным пользователям при переходе с заказа) -->
+      <div class="auth-prompt" id="authPrompt" style="display: none;">
+        <h3>Чтобы оставить отзыв, необходимо авторизоваться</h3>
+        <a href="AutorizationPage.html">Войти в аккаунт</a> или 
+        <a href="RegisterPage.html">Зарегистрироваться</a>
+      </div>
+
+      <!-- Список отзывов (показывается всем) -->
+      <div class="reviews-list">
+        <h3>Отзывы клиентов</h3>
+        <div id="reviewsContainer">
+          <div class="no-reviews">
+            <p>Загрузка отзывов...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+  <div class="footer-logo">
+    <img class="logo" src="image/logo.svg" />
+  </div>
+  <div>Я в социальных сетях</div>
+  <div class="social-icons" role="list" aria-label="Социальные сети">
+    <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Behance.svg" alt="Behance" />
+    </a>
+    <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/VK.svg" alt="VK" />
+    </a>
+  </div>
+</footer>
+
+  <script>
+    const profileLink = document.getElementById('profileLink');
+    const reviewForm = document.getElementById('reviewForm');
+    const ratingStars = document.getElementById('ratingStars');
+    const ratingInput = document.getElementById('rating');
+    const serviceDisplay = document.getElementById('serviceDisplay');
+    const submitReview = document.getElementById('submitReview');
+    const reviewFeedback = document.getElementById('reviewFeedback');
+    const reviewsContainer = document.getElementById('reviewsContainer');
+    const reviewFormContainer = document.getElementById('reviewFormContainer');
+    const authPrompt = document.getElementById('authPrompt');
+    const reviewStats = document.getElementById('reviewStats');
+    const overallRating = document.getElementById('overallRating');
+    const overallStars = document.getElementById('overallStars');
+    const reviewsCount = document.getElementById('reviewsCount');
+    const ratingBreakdown = document.getElementById('ratingBreakdown');
+    const existingReviewMessage = document.getElementById('existingReviewMessage');
+    const existingReviewDetails = document.getElementById('existingReviewDetails');
+    const reviewFormTitle = document.getElementById('reviewFormTitle');
+
+    let selectedRating = 0;
+    let reviewOrderData = null;
+    let currentUser = null;
+    let existingReview = null;
+    let isEditing = false;
+
+    // Функция для проверки авторизации
+    function checkAuth() {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) return null;
+      try {
+        return JSON.parse(userStr);
+      } catch (error) {
+        console.error('Ошибка при чтении данных пользователя:', error);
+        return null;
+      }
+    }
+
+    profileLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      const user = checkAuth();
+      if (!user) {
+        window.location.href = 'RegisterPage.html';
+        return;
+      }
+      if (user.email && user.email.toLowerCase() === 'polina@mail.ru') {
+        window.location.href = 'AdministratorPage.html';
+      } else if (user.id) {
+        window.location.href = `ProfilePage.html?userId=${user.id}`;
+      } else {
+        window.location.href = 'RegisterPage.html';
+      }
+    });
+
+    // Инициализация рейтинга
+    function initRating() {
+      const stars = ratingStars.querySelectorAll('.star');
+      stars.forEach(star => {
+        star.addEventListener('click', function() {
+          selectedRating = parseInt(this.getAttribute('data-rating'));
+          ratingInput.value = selectedRating;
+          
+          // Обновляем отображение звезд
+          stars.forEach((s, index) => {
+            if (index < selectedRating) {
+              s.classList.add('active');
+            } else {
+              s.classList.remove('active');
+            }
+          });
+        });
+      });
+    }
+
+    // Проверка существования отзыва для заказа (используем новый endpoint)
+    async function checkExistingReview(orderId, userId) {
+      try {
+        const response = await fetch(`http://localhost:3000/reviews/order/${orderId}?userId=${userId}`);
+        if (!response.ok) {
+          throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+        }
+        
+        const review = await response.json();
+        return review; // возвращает null если отзыва нет, или объект отзыва если есть
+      } catch (error) {
+        console.error('Ошибка при проверке отзыва:', error);
+        return null;
+      }
+    }
+
+    // Проверка, принадлежит ли заказ текущему пользователю
+    async function checkOrderBelongsToUser(orderId, userId) {
+      try {
+        const response = await fetch(`http://localhost:3000/profile?userId=${userId}`);
+        if (!response.ok) {
+          return false;
+        }
+        
+        const data = await response.json();
+        const userOrder = data.orders.find(order => order.id == orderId);
+        return !!userOrder; // true если заказ принадлежит пользователю
+      } catch (error) {
+        console.error('Ошибка при проверке заказа:', error);
+        return false;
+      }
+    }
+
+    // Загрузка данных для отзыва и настройка интерфейса
+    async function setupReviewInterface() {
+      currentUser = checkAuth();
+      const storedReviewData = localStorage.getItem('reviewOrderData');
+      
+      // Проверяем, есть ли данные заказа и принадлежат ли они текущему пользователю
+      let validReviewOrderData = null;
+      if (storedReviewData) {
+        try {
+          const parsedData = JSON.parse(storedReviewData);
+          
+          // Если пользователь авторизован, проверяем принадлежность заказа
+          if (currentUser) {
+            const orderBelongsToUser = await checkOrderBelongsToUser(parsedData.orderId, currentUser.id);
+            if (orderBelongsToUser) {
+              validReviewOrderData = parsedData;
+              console.log('Заказ принадлежит пользователю, показываем форму');
+            } else {
+              console.log('Заказ не принадлежит пользователю, очищаем данные');
+              localStorage.removeItem('reviewOrderData');
+            }
+          } else {
+            // Если пользователь не авторизован, сохраняем данные для показа формы авторизации
+            validReviewOrderData = parsedData;
+          }
+        } catch (error) {
+          console.error('Ошибка при парсинге reviewOrderData:', error);
+          localStorage.removeItem('reviewOrderData');
+        }
+      }
+      
+      reviewOrderData = validReviewOrderData;
+      
+      console.log('Текущий пользователь:', currentUser);
+      console.log('Валидные данные заказа:', reviewOrderData);
+      
+      // Определяем, как пользователь перешел на страницу
+      const cameFromValidOrder = !!reviewOrderData;
+      
+      if (cameFromValidOrder) {
+        // Пользователь перешел с карточки заказа (по кнопке "Оставить отзыв")
+        if (currentUser) {
+          // Авторизован и пришел с заказа - проверяем отзыв и показываем форму
+          existingReview = await checkExistingReview(reviewOrderData.orderId, currentUser.id);
+          console.log('Существующий отзыв:', existingReview);
+          
+          if (existingReview && !reviewOrderData.isEditing) {
+            // Отзыв уже существует и мы не в режиме редактирования - показываем сообщение
+            showExistingReviewMessage();
+          } else {
+            // Отзыва нет или мы в режиме редактирования - показываем форму
+            showReviewForm();
+          }
+        } else {
+          // Не авторизован и пришел с заказа - показываем приглашение авторизоваться
+          authPrompt.style.display = 'block';
+        }
+      } else {
+        // Пользователь перешел по кнопке в шапке - показываем только отзывы
+        console.log('Пользователь перешел по кнопке в шапке - показываем только отзывы');
+        // Все дополнительные блоки остаются скрытыми (display: none)
+        
+        // Очищаем невалидные данные заказа
+        if (storedReviewData) {
+          localStorage.removeItem('reviewOrderData');
+        }
+      }
+    }
+
+    // Показать сообщение о существующем отзыве
+    function showExistingReviewMessage() {
+      existingReviewMessage.style.display = 'block';
+      existingReviewDetails.innerHTML = `
+        <div class="existing-review-info">
+          <p><strong>Услуга:</strong> ${reviewOrderData.serviceName}</p>
+          <p><strong>Ваша оценка:</strong> ${'★'.repeat(existingReview.rating)}${'☆'.repeat(5 - existingReview.rating)} (${existingReview.rating}/5)</p>
+          ${existingReview.text ? `<p><strong>Ваш комментарий:</strong> ${existingReview.text}</p>` : ''}
+        </div>
+      `;
+    }
+
+    // Показать форму отзыва
+    function showReviewForm() {
+      reviewFormContainer.style.display = 'block';
+      serviceDisplay.value = reviewOrderData.serviceName;
+      
+      // Если это редактирование существующего отзыва
+      if (existingReview && reviewOrderData.isEditing) {
+        isEditing = true;
+        reviewFormTitle.textContent = 'Изменить отзыв';
+        submitReview.textContent = 'Обновить отзыв';
+        
+        // Заполняем форму данными существующего отзыва
+        selectedRating = existingReview.rating;
+        ratingInput.value = selectedRating;
+        document.getElementById('reviewText').value = existingReview.text || '';
+        
+        // Обновляем отображение звезд
+        const stars = ratingStars.querySelectorAll('.star');
+        stars.forEach((star, index) => {
+          if (index < selectedRating) {
+            star.classList.add('active');
+          } else {
+            star.classList.remove('active');
+          }
+        });
+      } else {
+        isEditing = false;
+        reviewFormTitle.textContent = 'Оставить отзыв';
+        submitReview.textContent = 'Отправить отзыв';
+      }
+    }
+
+    // Расчет статистики отзывов
+    function calculateReviewStats(reviews) {
+      if (!reviews || reviews.length === 0) {
+        return {
+          averageRating: 0,
+          totalReviews: 0,
+          ratingDistribution: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        };
+      }
+
+      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+      const averageRating = totalRating / reviews.length;
+      
+      // Распределение по рейтингам
+      const ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+      reviews.forEach(review => {
+        ratingDistribution[review.rating]++;
+      });
+
+      return {
+        averageRating: Math.round(averageRating * 10) / 10, // Округляем до 1 знака после запятой
+        totalReviews: reviews.length,
+        ratingDistribution: ratingDistribution
+      };
+    }
+
+    // Отображение статистики
+    function displayReviewStats(stats) {
+      if (stats.totalReviews === 0) {
+        reviewStats.style.display = 'none';
+        return;
+      }
+
+      reviewStats.style.display = 'block';
+      
+      // Общий рейтинг
+      overallRating.textContent = stats.averageRating.toFixed(1);
+      
+      // Звезды рейтинга
+      const fullStars = Math.floor(stats.averageRating);
+      const hasHalfStar = stats.averageRating % 1 >= 0.5;
+      let starsHtml = '';
+      
+      for (let i = 1; i <= 5; i++) {
+        if (i <= fullStars) {
+          starsHtml += '★';
+        } else if (i === fullStars + 1 && hasHalfStar) {
+          starsHtml += '☆';
+        } else {
+          starsHtml += '☆';
+        }
+      }
+      overallStars.innerHTML = starsHtml;
+      
+      // Количество отзывов
+      reviewsCount.textContent = `${stats.totalReviews} ${getReviewsWord(stats.totalReviews)}`;
+      
+      // Распределение рейтингов
+      ratingBreakdown.innerHTML = '';
+      for (let rating = 5; rating >= 1; rating--) {
+        const count = stats.ratingDistribution[rating];
+        const percentage = stats.totalReviews > 0 ? (count / stats.totalReviews) * 100 : 0;
+        
+        const ratingItem = document.createElement('div');
+        ratingItem.className = 'rating-item';
+        ratingItem.innerHTML = `
+          <div class="rating-value">${count}</div>
+          <div class="rating-stars-small" style="color: #ffc107; font-size: 14px;">
+            ${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}
+          </div>
+          <div class="rating-label">${percentage.toFixed(0)}%</div>
+        `;
+        ratingBreakdown.appendChild(ratingItem);
+      }
+    }
+
+    // Функция для правильного склонения слова "отзыв"
+    function getReviewsWord(count) {
+      if (count % 10 === 1 && count % 100 !== 11) return 'отзыв';
+      if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) return 'отзыва';
+      return 'отзывов';
+    }
+
+    // Загрузка существующих отзывов
+    async function loadReviews() {
+      try {
+        const response = await fetch('http://localhost:3000/reviews');
+        if (!response.ok) throw new Error('Ошибка загрузки отзывов');
+        
+        const reviews = await response.json();
+        
+        // Рассчитываем и отображаем статистику
+        const stats = calculateReviewStats(reviews);
+        displayReviewStats(stats);
+        
+        // Отображаем отзывы
+        displayReviews(reviews);
+      } catch (error) {
+        console.error('Ошибка загрузки отзывов:', error);
+        reviewsContainer.innerHTML = `
+          <div class="no-reviews">
+            <h3>Ошибка загрузки отзывов</h3>
+            <p>Попробуйте обновить страницу позже</p>
+          </div>
+        `;
+      }
+    }
+
+    // Отображение отзывов
+    function displayReviews(reviews) {
+      if (!reviews || reviews.length === 0) {
+        reviewsContainer.innerHTML = `
+          <div class="no-reviews">
+            <h3>Пока нет отзывов</h3>
+            <p>Будьте первым, кто оставит отзыв!</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Сортируем отзывы по ID (новые первыми)
+      const sortedReviews = reviews.sort((a, b) => b.id - a.id);
+
+      reviewsContainer.innerHTML = sortedReviews.map(review => `
+        <div class="review-item">
+          <div class="review-header">
+            <h4 class="review-service">${review.service_name || 'Услуга'}</h4>
+            <div class="review-rating" title="Оценка: ${review.rating}/5">
+              ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+            </div>
+          </div>
+          <div class="review-text">${review.text || ''}</div>
+          <div class="review-author">— ${review.user_email || 'Анонимный пользователь'}</div>
+        </div>
+      `).join('');
+    }
+
+    // Обработка отправки отзыва
+    reviewForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!currentUser) {
+        reviewFeedback.innerHTML = '<div class="feedback error">Пожалуйста, авторизуйтесь</div>';
+        return;
+      }
+
+      if (!reviewOrderData) {
+        reviewFeedback.innerHTML = '<div class="feedback error">Ошибка: данные заказа не найдены</div>';
+        return;
+      }
+
+      if (selectedRating === 0) {
+        reviewFeedback.innerHTML = '<div class="feedback error">Пожалуйста, выберите оценку</div>';
+        return;
+      }
+
+      const reviewText = document.getElementById('reviewText').value.trim();
+      if (!reviewText) {
+        reviewFeedback.innerHTML = '<div class="feedback error">Пожалуйста, напишите текст отзыва</div>';
+        return;
+      }
+
+      // Дополнительная проверка: нельзя оставить второй отзыв на тот же заказ
+      if (!isEditing) {
+        const checkReview = await checkExistingReview(reviewOrderData.orderId, currentUser.id);
+        if (checkReview) {
+          reviewFeedback.innerHTML = '<div class="feedback error">Вы уже оставили отзыв на этот заказ!</div>';
+          return;
+        }
+      }
+
+      submitReview.disabled = true;
+      submitReview.textContent = isEditing ? 'Обновление...' : 'Отправка...';
+
+      try {
+        let response;
+        
+        if (isEditing && existingReview) {
+          // Редактирование существующего отзыва
+          response = await fetch(`http://localhost:3000/reviews/${existingReview.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: reviewText,
+              rating: selectedRating
+            })
+          });
+        } else {
+          // Создание нового отзыва
+          response = await fetch('http://localhost:3000/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: currentUser.id,
+              service_id: reviewOrderData.serviceId,
+              order_id: reviewOrderData.orderId, // Используем order_id вместо orderId
+              text: reviewText,
+              rating: selectedRating
+            })
+          });
+        }
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Ошибка отправки отзыва');
+        }
+
+        const result = await response.json();
+        reviewFeedback.innerHTML = `<div class="feedback success">Отзыв успешно ${isEditing ? 'обновлен' : 'отправлен'}!</div>`;
+        reviewForm.reset();
+        selectedRating = 0;
+        ratingInput.value = '';
+        
+        // Сбрасываем звезды
+        ratingStars.querySelectorAll('.star').forEach(star => {
+          star.classList.remove('active');
+        });
+
+        // Перезагружаем список отзывов и статистику
+        await loadReviews();
+
+        // Через 3 секунды перенаправляем в профиль
+        setTimeout(() => {
+          window.location.href = `ProfilePage.html?userId=${currentUser.id}`;
+        }, 3000);
+
+      } catch (error) {
+        console.error('Ошибка отправки отзыва:', error);
+        reviewFeedback.innerHTML = `<div class="feedback error">Ошибка: ${error.message}</div>`;
+      } finally {
+        submitReview.disabled = false;
+        submitReview.textContent = isEditing ? 'Обновить отзыв' : 'Отправить отзыв';
+      }
+    });
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', () => {
+      initRating();
+      setupReviewInterface();
+      loadReviews();
+    });
+  </script>
+</body>
+</html>

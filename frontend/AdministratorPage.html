@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ryumina Create - Администратор</title>
+  <link rel="stylesheet" href="AdministratorPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+  <header>
+    <img class="logo" src="image/logo.svg" alt="Логотип" />
+
+    <nav role="navigation" aria-label="Главное меню">
+      <a href="MainPage.html">Главная</a>
+      <a href="ServicePage.html">Услуги</a>
+      <a href="PortfolioPage.html">Портфолио</a>
+      <a href="ReviewsPage.html">Отзывы</a>
+    </nav>
+
+    <a href="#" id="profileLink" aria-label="Кнопка профиля">
+      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+    </a>
+  </header>
+
+  <main>
+    <!-- Инфо о администраторе -->
+    <section class="section-block" aria-label="Информация администратора">
+      <h2>Информация о вас</h2>
+      <p><b>Имя:</b> <span id="adminFirstName"></span></p>
+      <p><b>Фамилия:</b> <span id="adminLastName"></span></p>
+      <p><b>Почта:</b> <span id="adminEmail"></span></p>
+      <button id="logoutBtn" aria-label="Выйти из аккаунта" style="display: block; margin: 20px auto;">Выйти</button>
+    </section>
+
+    <!-- Заказы -->
+    <section class="section-block" aria-label="Список заказов">
+      <h2>Все заказы</h2>
+      <div>
+        <button id="showPendingBtn">Показать невыполненные</button>
+        <button id="showCompletedBtn">Показать выполненные</button>
+        <button id="showAllBtn">Показать все</button>
+      </div>
+      <div id="ordersList" class="orders-list" role="list"></div>
+    </section>
+
+    <!-- Добавить новый элемент в портфолио -->
+    <section class="section-block" aria-label="Добавить в портфолио">
+      <h2>Добавить запись в портфолио</h2>
+      <form id="portfolioForm" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Название" required />
+        <textarea name="description" placeholder="Описание" rows="2" required></textarea>
+        <input type="file" name="image_files" multiple accept="image/*" />
+        <button type="submit">Добавить</button>
+      </form>
+      <div id="portfolioFeedback"></div>
+    </section>
+
+    <!-- Добавить новую услугу -->
+    <section class="section-block" aria-label="Добавить услугу">
+      <h2>Добавить новую услугу</h2>
+      <form id="serviceForm">
+        <input type="text" name="name" placeholder="Название услуги" required />
+        <input type="text" name="short_description" placeholder="Краткое описание" />
+        <textarea name="description" placeholder="Описание" rows="3"></textarea>
+        <input type="number" name="price" placeholder="Цена (руб.)" step="0.01" required />
+        <button type="submit">Добавить</button>
+      </form>
+      <div id="serviceFeedback"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-logo">
+      <img class="logo" src="image/logo.svg" />
+    </div>
+    <div>Я в социальных сетях</div>
+    <div class="social-icons" role="list" aria-label="Социальные сети">
+      <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+        <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+      </a>
+      <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+        <img class="socials" src="image/Behance.svg" alt="Behance" />
+      </a>
+      <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+        <img class="socials" src="image/VK.svg" alt="VK" />
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // JavaScript код остается без изменений
+    const adminFirstName = document.getElementById('adminFirstName');
+    const adminLastName = document.getElementById('adminLastName');
+    const adminEmail = document.getElementById('adminEmail');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const ordersList = document.getElementById('ordersList');
+    const showPendingBtn = document.getElementById('showPendingBtn');
+    const showCompletedBtn = document.getElementById('showCompletedBtn');
+    const showAllBtn = document.getElementById('showAllBtn');
+    const portfolioForm = document.getElementById('portfolioForm');
+    const portfolioFeedback = document.getElementById('portfolioFeedback');
+    const serviceForm = document.getElementById('serviceForm');
+    const serviceFeedback = document.getElementById('serviceFeedback');
+
+    let allOrders = [];
+    let currentFilter = null;
+
+    function getAdminData() {
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        window.location.href = 'RegisterPage.html';
+        return null;
+      }
+      return JSON.parse(userData);
+    }
+
+    async function loadAdminInfoAndOrders() {
+      const admin = getAdminData();
+      if (!admin) return;
+
+      adminFirstName.textContent = admin.firstName || '';
+      adminLastName.textContent = admin.lastName || '';
+      adminEmail.textContent = admin.email || '';
+
+      try {
+        console.log('Загрузка заказов для администратора...');
+        const response = await fetch(`http://localhost:3000/orders?isAdmin=1&userId=${admin.id}`);
+        if (!response.ok) throw new Error('Ошибка загрузки заказов');
+        allOrders = await response.json();
+        console.log('Загружены заказы:', allOrders);
+        renderOrders(allOrders, currentFilter);
+      } catch (err) {
+        console.error('Ошибка загрузки заказов:', err);
+        ordersList.innerHTML = `<p>Ошибка загрузки заказов: ${err.message}</p>`;
+      }
+    }
+
+    function renderOrders(orders, filterStatus = null) {
+      ordersList.innerHTML = '';
+      let filtered = orders;
+      if (filterStatus !== null) {
+        filtered = orders.filter(order => order.status === filterStatus);
+      }
+      
+      if (filtered.length === 0) {
+        ordersList.textContent = filterStatus ? 
+          `Заказы со статусом "${filterStatus}" не найдены` : 
+          'Заказы не найдены';
+        return;
+      }
+      
+      filtered.forEach(order => {
+        const div = document.createElement('div');
+        div.classList.add('order-item');
+        const statusClass = order.status === 'completed' ? 'status-completed' : 'status-pending';
+
+        let filesHtml = 'Отсутствуют';
+        try {
+          const files = order.file_urls ? JSON.parse(order.file_urls) : [];
+          if (files.length) {
+            filesHtml = files.map(filePath => {
+              const url = filePath.startsWith('http') ? filePath : `http://localhost:3000${filePath}`;
+              const fileName = url.split('/').pop();
+              return `<a href="${url}" target="_blank" rel="noopener noreferrer">${fileName}</a>`;
+            }).join(', ');
+          }
+        } catch {
+          filesHtml = 'Ошибка при загрузке файлов';
+        }
+
+        div.innerHTML = `
+          <strong>Заказ №${order.id} - ${order.service_name || 'Услуга'}</strong>
+          <p><b>Пользователь:</b> ${order.user_email || 'Неизвестно'}</p>
+          <p><b>Описание:</b> ${order.description || 'Без описания'}</p>
+          <p><b>Файлы:</b> ${filesHtml}</p>
+          <p class="${statusClass}"><b>Статус:</b> ${order.status || 'Неизвестен'}</p>
+          ${order.status === 'pending' ? 
+            `<button class="complete-btn" data-id="${order.id}">Выполнить заказ</button>` : 
+            '<p><em>Заказ выполнен</em></p>'
+          }
+        `;
+        ordersList.appendChild(div);
+      });
+    }
+
+    // Обработка кнопок фильтрации заказов
+    showPendingBtn.addEventListener('click', () => {
+      currentFilter = 'pending';
+      renderOrders(allOrders, currentFilter);
+    });
+    
+    showCompletedBtn.addEventListener('click', () => {
+      currentFilter = 'completed';
+      renderOrders(allOrders, currentFilter);
+    });
+    
+    showAllBtn.addEventListener('click', () => {
+      currentFilter = null;
+      renderOrders(allOrders, currentFilter);
+    });
+
+    // Обработчик клика на кнопку "Выполнить заказ"
+    ordersList.addEventListener('click', async (event) => {
+      if (event.target.classList.contains('complete-btn')) {
+        const orderId = event.target.dataset.id;
+        const button = event.target;
+        
+        // Блокируем кнопку на время выполнения запроса
+        button.disabled = true;
+        button.textContent = 'Выполняется...';
+        
+        try {
+          console.log(`Обновление статуса заказа ${orderId} на completed`);
+          
+          const response = await fetch(`http://localhost:3000/orders/${orderId}/status`, {
+            method: 'PATCH',
+            headers: { 
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'completed' })
+          });
+
+          console.log('Ответ сервера:', response.status);
+
+          if (!response.ok) {
+            let errorText;
+            try {
+              const errorData = await response.json();
+              errorText = errorData.error || `Ошибка ${response.status}`;
+            } catch {
+              errorText = await response.text();
+            }
+            throw new Error(errorText);
+          }
+
+          const result = await response.json();
+          console.log('Статус успешно обновлен:', result);
+          
+          // Перезагружаем заказы
+          await loadAdminInfoAndOrders();
+          
+        } catch (err) {
+          console.error('Ошибка при изменении статуса заказа:', err);
+          alert('Ошибка при изменении статуса заказа: ' + err.message);
+          
+          // Восстанавливаем кнопку
+          button.disabled = false;
+          button.textContent = 'Выполнить заказ';
+        }
+      }
+    });
+
+    portfolioForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      portfolioFeedback.textContent = '';
+      const admin = getAdminData();
+      if (!admin) return;
+
+      const formData = new FormData(portfolioForm);
+      formData.append('userId', admin.id);
+
+      try {
+        const response = await fetch('http://localhost:3000/portfolio', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText);
+        }
+
+        const result = await response.json();
+        portfolioFeedback.textContent = 'Запись в портфолио добавлена!';
+        portfolioFeedback.style.color = 'green';
+        portfolioForm.reset();
+      } catch (err) {
+        portfolioFeedback.textContent = 'Ошибка: ' + err.message;
+        portfolioFeedback.style.color = 'red';
+      }
+    });
+
+    serviceForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      serviceFeedback.textContent = '';
+      const admin = getAdminData();
+      if (!admin) return;
+      
+      const formData = new FormData(serviceForm);
+      const name = formData.get('name').trim();
+      const short_description = formData.get('short_description').trim();
+      const description = formData.get('description').trim();
+      const price = parseFloat(formData.get('price'));
+      
+      if (!name || isNaN(price)) {
+        serviceFeedback.textContent = 'Введите корректное название и цену.';
+        serviceFeedback.style.color = 'red';
+        return;
+      }
+      
+      try {
+        const response = await fetch('http://localhost:3000/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: admin.id,
+            name,
+            short_description,
+            description,
+            price
+          }),
+        });
+        
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Ошибка добавления услуги');
+        
+        serviceFeedback.textContent = 'Услуга успешно добавлена!';
+        serviceFeedback.style.color = 'green';
+        serviceForm.reset();
+      } catch (err) {
+        serviceFeedback.textContent = 'Ошибка: ' + err.message;
+        serviceFeedback.style.color = 'red';
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        window.location.href = 'RegisterPage.html';
+        return;
+      }
+      const user = JSON.parse(userStr);
+      if (!(user.email && user.email.toLowerCase() === 'polina@mail.ru')) {
+        window.location.href = `ProfilePage.html?userId=${user.id || ''}`;
+        return;
+      }
+      loadAdminInfoAndOrders();
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('user');
+      window.location.href = 'AutorizationPage.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #fff;
+      color: #750104;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    header {
+      background: #750104;
+      color: white;
+      padding: 15px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .logo span {
+      font-weight: 900;
+      font-size: 30px;
+    }
+    nav {
+      display: flex;
+      gap: 80px;
+      font-size: 16px;
+    }
+    nav a {
+      color: white;
+      font-weight: 600px;
+    }
+    .user-icon {
+      width: 24px;
+      height: 24px;
+      fill: white;
+      cursor: pointer;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+    }
+
+  h1 {
+      margin: 0 0 30px 0;
+      font-weight: 900;
+      color: #750104;
+    }
+
+    h2, h3 {
+      margin: 0 0 30px 0;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .top-block {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 70px;
+      user-select: none;
+    }
+    .top-block .stat {
+      background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(152, 0, 2, 1) 50%, rgba(50, 0, 1, 1) 100%);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 22px;
+      line-height: 1.1;
+      text-align: center;
+      cursor: default;
+      min-width: 170px;
+    }
+    .top-block .stat span {
+      font-weight: 900;
+      font-size: 38px;
+      margin-right: 4px;
+    }
+    .top-block .stat small {
+      display: block;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    section.service-item {
+      background-color: #800000;
+      color: white;
+      border-radius: 16px;
+      padding: 30px 35px;
+      margin-bottom: 40px;
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      user-select: none;
+    }
+
+    section.service-item .left, section.service-item .right {
+      flex: 1 1 280px;
+    }
+
+    section.service-item .left {
+      font-weight: 300;
+      font-size: 30px;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    section.service-item .left small {
+      font-weight: 300;
+      font-size: 14px;
+      display: block;
+      margin-top: -10px;
+      opacity: 0.7;
+    }
+
+    section.service-item .left .price {
+      margin-top: 15px;
+      font-weight: 300;
+      font-size: 22px;
+    }
+
+    section.service-item .right {
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    section.service-item .right ul {
+      padding-left: 18px;
+      list-style-type: none;
+    }
+
+    section.service-item .right ul li::before {
+      content: "–";
+      color: white;
+      padding-right: 5px;
+      font-weight: 900;
+      font-size: 20px;
+      vertical-align: middle;
+    }
+.order-button {
+      background-color: #a22;
+      color: white;
+      padding: 10px 20px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 8px;
+      user-select: none;
+      cursor: pointer;
+      align-self: flex-start;
+      transition: background-color 0.3s ease;
+      margin-left: 15px;
+      display: inline-block;
+    }
+    .order-button:hover {
+      background-color: #7a1717;
+    }
+
+    footer {
+      background: #750104;
+      color: white;
+      display: flex;
+      width: 100%;
+      margin: 0 auto;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      font-size: 16px;
+      font-weight: 600;
+      height: 150px;
+      padding: 0 80px;
+    }
+
+    .footer-logo {
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      cursor: default;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 25px;
+    }
+
+    .social-icons img {
+      fill: white;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      transition: fill 0.3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .top-text {
+        font-size: 44px;
+      }
+      .section-why-me h2, .cases-title, .section-what-can h2 {
+        font-size: 36px;
+      }
+      .floating-logo {
+        top: 70px;
+        right: 20px;
+        width: 80px;
+        height: 80px;
+        font-size: 12px;
+      }
+      .wave-text-container {
+        width: 100%;
+        font-size: 14px;
+      }
+      main {
+        margin: 30px 10px 60px;
+      }
+      .cases-grid {
+        flex-direction: column;
+      }
+      .case-item {
+        max-height: 300px;
+      }
+      footer {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      .photo-woman {
+        display: none;
+      }
+    }

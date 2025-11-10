@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ryumina Create - Заказ услуги</title>
+  <link rel="stylesheet" href="AddOrderPageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+<header>
+  <img class="logo" src="image/logo.svg" alt="Логотип" />
+
+  <nav role="navigation" aria-label="Главное меню">
+    <a href="MainPage.html">Главная</a>
+    <a href="ServicePage.html">Услуги</a>
+    <a href="PortfolioPage.html">Портфолио</a>
+    <a href="ReviewsPage.html">Отзывы</a>
+  </nav>
+
+  <a href="#" id="profileLink">
+    <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+  </a>
+</header>
+
+<main>
+  <h1 style="text-align: center;">Заказ услуги</h1>
+
+  <div id="serviceDisplay" aria-label="Детали выбранной услуги">
+    <p>Загрузка данных услуги...</p>
+  </div>
+
+  <form id="orderForm" class="order-form" enctype="multipart/form-data">
+    <label for="description">Описание задачи</label>
+    <textarea id="description" name="description" placeholder="Опишите вашу задачу" required></textarea>
+    <label for="fileInput">Прикрепить файлы (до 10 файлов)</label>
+    <input type="file" id="fileInput" name="file_inputs" multiple accept="image/*,application/pdf,.doc,.docx,.txt,.zip,.rar" />
+    <button type="submit" style="display: block; margin: 0 auto;">Заказать услугу</button>
+  </form>
+
+  <div id="orderFeedback" role="alert" aria-live="polite"></div>
+</main>
+
+<footer>
+  <div class="footer-logo">
+    <img class="logo" src="image/logo.svg" />
+  </div>
+  <div>Я в социальных сетях</div>
+  <div class="social-icons" role="list" aria-label="Социальные сети">
+    <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Behance.svg" alt="Behance" />
+    </a>
+    <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/VK.svg" alt="VK" />
+    </a>
+  </div>
+</footer>
+
+<script>
+  const profileLink = document.getElementById('profileLink');
+
+  // Функция для проверки авторизации
+  function checkAuth() {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      return null;
+    }
+    try {
+      return JSON.parse(userStr);
+    } catch (error) {
+      console.error('Ошибка при чтении данных пользователя:', error);
+      return null;
+    }
+  }
+
+  profileLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    const user = checkAuth();
+    if (!user) {
+      window.location.href = 'RegisterPage.html';
+      return;
+    }
+    if (user.email && user.email.toLowerCase() === 'polina@mail.ru') {
+      window.location.href = 'AdministratorPage.html';
+    } else if (user.id) {
+      window.location.href = `ProfilePage.html?userId=${user.id}`;
+    } else {
+      window.location.href = 'RegisterPage.html';
+    }
+  });
+
+  function getServiceIdFromStorage() {
+    const serviceId = localStorage.getItem('selectedServiceId');
+    console.log('=== ДЕБАГ: Получение serviceId из localStorage ===');
+    console.log('Найденный serviceId:', serviceId);
+    return serviceId;
+  }
+
+  async function loadService() {
+    const serviceId = getServiceIdFromStorage();
+    const container = document.getElementById('serviceDisplay');
+
+    console.log('=== ДЕБАГ: Загрузка услуги ===');
+    console.log('ServiceId из функции:', serviceId);
+
+    if (!serviceId) {
+      container.innerHTML = '<p style="color: red;">Не удалось определить услугу. Вернитесь на страницу услуг и выберите услугу снова.</p>';
+      console.error('ServiceId не найден в localStorage');
+      return;
+    }
+
+    try {
+      console.log('Загружаем услугу с ID:', serviceId);
+      
+      // Получаем все услуги
+      const response = await fetch(`http://localhost:3000/services`);
+      console.log('Статус ответа сервера:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`Ошибка загрузки услуг: ${response.status}`);
+      }
+
+      const services = await response.json();
+      console.log('Все услуги с сервера:', services);
+      
+      // Найдем нужную услугу по ID
+      const service = services.find(s => s.id.toString() === serviceId.toString());
+      console.log('Найденная услуга:', service);
+
+      if (!service) {
+        container.innerHTML = '<p>Услуга не найдена.</p>';
+        console.error('Услуга с ID', serviceId, 'не найдена в списке услуг');
+        // Очищаем неправильный serviceId
+        localStorage.removeItem('selectedServiceId');
+        return;
+      }
+      
+      displayService(service);
+    } catch (error) {
+      console.error('Ошибка загрузки услуги:', error);
+      container.innerHTML = '<p>Ошибка загрузки услуги. Проверьте подключение к серверу.</p>';
+    }
+  }
+
+  function displayService(service) {
+    const container = document.getElementById('serviceDisplay');
+    
+    container.innerHTML = `
+      <div class="left">
+        <h2>${service.name || 'Название услуги'}</h2>
+        ${service.short_description ? `<small>${service.short_description}</small>` : ''}
+        <div class="price">от ${service.price ? service.price.toLocaleString('ru-RU') : '0'} р</div>
+      </div>
+      <div class="right">
+        <p>${service.description || 'Описание услуги'}</p>
+      </div>
+    `;
+    
+    console.log('Услуга отображена:', service);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('=== ДЕБАГ: Страница AddOrderPage загружена ===');
+    
+    // Проверяем авторизацию при загрузке страницы
+    const user = checkAuth();
+    if (!user) {
+      alert('Пожалуйста, авторизуйтесь для заказа услуги.');
+      window.location.href = 'AutorizationPage.html';
+      return;
+    }
+
+    loadService();
+
+    const orderForm = document.getElementById('orderForm');
+    const orderFeedback = document.getElementById('orderFeedback');
+    const serviceId = getServiceIdFromStorage();
+
+    orderForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      orderFeedback.textContent = '';
+      
+      const user = checkAuth();
+      if (!user) {
+        orderFeedback.textContent = 'Пожалуйста, авторизуйтесь для заказа.';
+        return;
+      }
+
+      if (!serviceId) {
+        orderFeedback.textContent = 'Ошибка: не указана услуга. Вернитесь на страницу услуг и выберите услугу снова.';
+        return;
+      }
+
+      // Проверяем описание
+      const description = orderForm.description.value.trim();
+      if (!description) {
+        orderFeedback.textContent = 'Пожалуйста, опишите вашу задачу.';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('userId', user.id);
+      formData.append('service_id', serviceId);
+      formData.append('description', description);
+
+      // Добавляем файлы из input multiple
+      const files = orderForm.file_inputs.files;
+      if (files.length > 10) {
+        orderFeedback.textContent = 'Можно загрузить не более 10 файлов.';
+        return;
+      }
+
+      // Проверяем размер файлов (максимум 30MB на файл)
+      let totalSize = 0;
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].size > 30 * 1024 * 1024) {
+          orderFeedback.textContent = `Файл "${files[i].name}" слишком большой. Максимальный размер файла - 30MB.`;
+          return;
+        }
+        totalSize += files[i].size;
+        formData.append('files', files[i]);
+      }
+
+      // Общий лимит 100MB
+      if (totalSize > 100 * 1024 * 1024) {
+        orderFeedback.textContent = 'Общий размер файлов не должен превышать 100MB.';
+        return;
+      }
+
+      try {
+        console.log('Отправка заказа...');
+        console.log('Данные формы:', {
+          userId: user.id,
+          service_id: serviceId,
+          description: description,
+          filesCount: files.length,
+          totalSize: (totalSize / (1024 * 1024)).toFixed(2) + 'MB'
+        });
+
+        const response = await fetch('http://localhost:3000/orders', {
+          method: 'POST',
+          body: formData
+        });
+
+        console.log('Статус ответа:', response.status);
+        
+        if (!response.ok) {
+          let errorText;
+          try {
+            const errorData = await response.json();
+            errorText = errorData.error || `Ошибка ${response.status}`;
+          } catch (parseError) {
+            errorText = await response.text();
+          }
+          throw new Error(errorText);
+        }
+
+        const result = await response.json();
+        console.log('Успешный ответ:', result);
+        
+        orderFeedback.style.color = 'green';
+        orderFeedback.textContent = 'Заказ успешно создан! Перенаправление в профиль...';
+        orderForm.reset();
+
+        // Очищаем serviceId после успешного заказа
+        localStorage.removeItem('selectedServiceId');
+
+        // Через 2 секунды перенаправляем в профиль
+        setTimeout(() => {
+          window.location.href = `ProfilePage.html?userId=${user.id}`;
+        }, 2000);
+
+      } catch (error) {
+        console.error('Ошибка создания заказа:', error);
+        orderFeedback.style.color = 'red';
+        
+        if (error.message.includes('SQLITE_ERROR: table orders has no column named status')) {
+          orderFeedback.textContent = 'Ошибка сервера: проблема с базой данных. Пожалуйста, сообщите администратору.';
+        } else if (error.message.includes('SQLITE_ERROR: no such table: orders')) {
+          orderFeedback.textContent = 'Ошибка сервера: таблица заказов не существует. Пожалуйста, сообщите администратору.';
+        } else {
+          orderFeedback.textContent = 'Ошибка создания заказа: ' + error.message;
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

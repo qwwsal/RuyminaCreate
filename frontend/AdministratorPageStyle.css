@@ -1,0 +1,323 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: #fff;
+  color: #750104;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+header {
+  background: #750104;
+  color: white;
+  padding: 15px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.logo span {
+  font-weight: 900;
+  font-size: 30px;
+}
+
+nav {
+  display: flex;
+  gap: 80px;
+  font-size: 16px;
+}
+
+nav a {
+  color: white;
+  font-weight: 600px;
+}
+
+.user-icon {
+  width: 24px;
+  height: 24px;
+  fill: white;
+  cursor: pointer;
+}
+
+.section-block {
+  max-width: 900px;
+  background: white;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+/* Стили для кнопок фильтрации */
+#showPendingBtn,
+#showCompletedBtn,
+#showAllBtn,
+#logoutBtn {
+  padding: 10px 15px;
+  background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+#showPendingBtn:hover,
+#showCompletedBtn:hover,
+#showAllBtn:hover {
+  background: linear-gradient(90deg, rgba(117, 1, 4, 1) 0%, rgba(152, 0, 2, 1) 100%);
+}
+
+.orders-list,
+.portfolio-list,
+.services-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 15px;
+  border-radius: 5px;
+  background: #fafafa;
+  font-size: 0.95em;
+}
+
+.order-item,
+.portfolio-item,
+.service-item {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
+}
+
+/* Стили для форм - ВЕРТИКАЛЬНОЕ РАСПОЛОЖЕНИЕ */
+form {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: stretch;
+}
+
+/* Стили для полей ввода */
+form input,
+form textarea,
+form input[type="file"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #980002;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #750104;
+  transition: border-color 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+form input:focus,
+form textarea:focus {
+  border-color: #750104;
+  outline: none;
+}
+
+/* Стили для textarea */
+form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Стили для файлового input */
+form input[type="file"] {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+form input[type="file"]::file-selector-button {
+  background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+/* Стили для кнопок форм */
+form button {
+  padding: 15px 0;
+  background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 900;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+  width: 100%;
+}
+
+form button:hover {
+  background: linear-gradient(90deg, rgba(117, 1, 4, 1) 0%, rgba(152, 0, 2, 1) 100%);
+}
+
+/* Стили для статусов заказов */
+.status-pending {
+  color: #d9534f;
+  font-weight: bold;
+}
+
+.status-completed {
+  color: #5cb85c;
+  font-weight: bold;
+}
+
+.complete-btn {
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.complete-btn:hover {
+  background-color: #4cae4c;
+}
+
+.complete-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.order-item {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.orders-list {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+footer {
+  background: #750104;
+  color: white;
+  display: flex;
+  width: 100%;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  font-size: 16px;
+  font-weight: 600;
+  height: 150px;
+  padding: 0 80px;
+}
+
+.footer-logo {
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  cursor: default;
+}
+
+.social-icons {
+  display: flex;
+  gap: 25px;
+}
+
+.social-icons img {
+  fill: white;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: fill 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .top-text {
+    font-size: 44px;
+  }
+
+  footer {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 20px;
+    height: auto;
+  }
+
+  .photo-woman {
+    display: none;
+  }
+
+  header {
+    padding: 15px 20px;
+  }
+
+  nav {
+    gap: 30px;
+  }
+
+  #showPendingBtn,
+  #showCompletedBtn,
+  #showAllBtn {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .section-block {
+    margin: 20px 15px;
+    padding: 15px;
+  }
+
+  form {
+    gap: 12px;
+  }
+
+  form input,
+  form textarea,
+  form input[type="file"] {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  form button {
+    padding: 12px 0;
+    font-size: 18px;
+  }
+}

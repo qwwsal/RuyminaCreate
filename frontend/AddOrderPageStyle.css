@@ -1,0 +1,310 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: #fff;
+  color: #750104;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+header {
+  background: #750104;
+  color: white;
+  padding: 15px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.logo span {
+  font-weight: 900;
+  font-size: 30px;
+}
+
+nav {
+  display: flex;
+  gap: 80px;
+  font-size: 16px;
+}
+
+nav a {
+  color: white;
+  font-weight: 600;
+}
+
+.user-icon {
+  width: 24px;
+  height: 24px;
+  fill: white;
+  cursor: pointer;
+}
+
+#serviceDisplay {
+  max-width: 900px;
+  margin: 20px auto 40px;
+  padding: 30px 35px;
+  background-color: #800000;
+  color: white;
+  border-radius: 16px;
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  user-select: none;
+}
+
+#serviceDisplay .left, #serviceDisplay .right {
+  flex: 1 1 280px;
+}
+
+/* Стили только для кнопки выбора файлов в файловом инпуте */
+input[type="file"]::-webkit-file-upload-button {
+  background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 15px;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background: linear-gradient(90deg, rgba(117, 1, 4, 1) 0%, rgba(152, 0, 2, 1) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(152, 0, 2, 0.3);
+}
+
+input[type="file"]::-webkit-file-upload-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(152, 0, 2, 0.3);
+}
+
+/* Для Firefox */
+input[type="file"]::file-selector-button {
+  background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 15px;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: linear-gradient(90deg, rgba(117, 1, 4, 1) 0%, rgba(152, 0, 2, 1) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(152, 0, 2, 0.3);
+}
+
+input[type="file"]::file-selector-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(152, 0, 2, 0.3);
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  input[type="file"]::-webkit-file-upload-button,
+  input[type="file"]::file-selector-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    margin-right: 12px;
+  }
+}
+
+#serviceDisplay .left {
+  font-weight: 300;
+  font-size: 30px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+#serviceDisplay .left small {
+  font-weight: 300;
+  font-size: 14px;
+  display: block;
+  margin-top: -10px;
+  opacity: 0.7;
+}
+
+#serviceDisplay .left .price {
+  margin-top: 15px;
+  font-weight: 300;
+  font-size: 22px;
+}
+
+#serviceDisplay .right {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+#serviceDisplay .right ul {
+  padding-left: 18px;
+  list-style-type: none;
+}
+
+#serviceDisplay .right ul li::before {
+  content: "–";
+  color: white;
+  padding-right: 5px;
+  font-weight: 900;
+  font-size: 20px;
+  vertical-align: middle;
+}
+
+form.order-form {
+  max-width: 900px;
+  margin: 0 auto 60px;
+  padding: 20px;
+  background: #f3f0f0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  color: #600000;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+form.order-form label {
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+form.order-form textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+}
+
+form.order-form input[type="file"] {
+  outline: none;
+}
+
+form.order-form button {
+  background-color: #a22;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s;
+  max-width: 200px;
+  align-self: flex-start;
+}
+
+form.order-form button:hover {
+  background-color: #7a1717;
+}
+
+#orderFeedback {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  color: #a22;
+  font-weight: 600;
+}
+
+footer {
+  background: #750104;
+  color: white;
+  display: flex;
+  width: 100%;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  font-size: 16px;
+  font-weight: 600;
+  height: 150px;
+  padding: 0 80px;
+}
+
+.footer-logo {
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  cursor: default;
+}
+
+.social-icons {
+  display: flex;
+  gap: 25px;
+}
+
+.social-icons img {
+  fill: white;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: fill 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .top-text {
+    font-size: 44px;
+  }
+  .section-why-me h2, .cases-title, .section-what-can h2 {
+    font-size: 36px;
+  }
+  .floating-logo {
+    top: 70px;
+    right: 20px;
+    width: 80px;
+    height: 80px;
+    font-size: 12px;
+  }
+  .wave-text-container {
+    width: 100%;
+    font-size: 14px;
+  }
+  main {
+    margin: 30px 10px 60px;
+  }
+  .cases-grid {
+    flex-direction: column;
+  }
+  .case-item {
+    max-height: 300px;
+  }
+  footer {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  .photo-woman {
+    display: none;
+  }
+}

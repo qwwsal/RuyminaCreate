@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ryumina Create - Профиль</title>
+  <link rel="stylesheet" href="ProfilePageStyle.css" />
+  <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+</head>
+<body>
+  <header>
+    <img class="logo" src="image/logo.svg" alt="Логотип" />
+
+    <nav role="navigation" aria-label="Главное меню">
+      <a href="MainPage.html">Главная</a>
+      <a href="ServicePage.html">Услуги</a>
+      <a href="PortfolioPage.html">Портфолио</a>
+      <a href="ReviewsPage.html">Отзывы</a>
+    </nav>
+
+    <a href="#" id="profileLink" aria-label="Кнопка профиля">
+      <img class="user" src="image/user.svg" alt="Профиль пользователя" />
+    </a>
+  </header>
+
+  <main>
+    <section class="user-info" aria-label="Информация о пользователе">
+      <h2>О пользователе</h2>
+      <p><b>Имя:</b> <span id="userFirstName"></span></p>
+      <p><b>Фамилия:</b> <span id="userLastName"></span></p>
+      <p><b>Почта:</b> <span id="userEmail"></span></p>
+      <p><b>Телефон:</b> <span id="userPhone"></span></p>
+      <button id="logoutBtn" aria-label="Выйти из аккаунта" style="display: block; margin: 20px auto;">Выйти</button>
+    </section>
+
+    <section class="orders-block" aria-label="Информация о заказах пользователя">
+      <h2>Мои заказы</h2>
+      <div id="ordersContainer" role="list"></div>
+    </section>
+  </main>
+
+  <footer>
+  <div class="footer-logo">
+    <img class="logo" src="image/logo.svg" />
+  </div>
+  <div>Я в социальных сетях</div>
+  <div class="social-icons" role="list" aria-label="Социальные сети">
+    <a href="https://www.instagram.com/iitspo?igsh=MjAxNG8wMGd3cXo2" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.behance.net/polinaryumina" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/Behance.svg" alt="Behance" />
+    </a>
+    <a href="https://vk.com/iprmn" target="_blank" rel="noopener noreferrer">
+      <img class="socials" src="image/VK.svg" alt="VK" />
+    </a>
+  </div>
+</footer>
+
+  <script>
+    const profileLink = document.getElementById('profileLink');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userFirstName = document.getElementById('userFirstName');
+    const userLastName = document.getElementById('userLastName');
+    const userEmail = document.getElementById('userEmail');
+    const userPhone = document.getElementById('userPhone');
+    const ordersContainer = document.getElementById('ordersContainer');
+
+    // Функция для проверки авторизации
+    function checkAuth() {
+      const userStr = localStorage.getItem('user');
+      console.log('Данные пользователя из localStorage:', userStr);
+      
+      if (!userStr) {
+        console.log('Пользователь не авторизован');
+        return null;
+      }
+      
+      try {
+        const user = JSON.parse(userStr);
+        console.log('Текущий авторизованный пользователь:', user);
+        return user;
+      } catch (error) {
+        console.error('Ошибка при чтении данных пользователя:', error);
+        return null;
+      }
+    }
+
+    profileLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      const user = checkAuth();
+      if (!user) {
+        window.location.href = 'RegisterPage.html';
+        return;
+      }
+      window.location.href = `ProfilePage.html?userId=${user.id}`;
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('user');
+      window.location.href = 'AutorizationPage.html';
+    });
+
+    function getUserIdFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const userId = params.get('userId');
+      console.log('UserId из URL:', userId);
+      return userId;
+    }
+
+    // Функция для определения типа файла по расширению
+    function getFileIcon(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      const icons = {
+        pdf: '📄',
+        jpg: '🖼️',
+        jpeg: '🖼️',
+        png: '🖼️',
+        gif: '🖼️',
+        doc: '📝',
+        docx: '📝',
+        txt: '📝',
+        zip: '📦',
+        rar: '📦'
+      };
+      return icons[ext] || '📎';
+    }
+
+    // Функция для получения класса статуса
+    function getStatusClass(status) {
+      switch(status) {
+        case 'pending': return 'status-pending';
+        case 'completed': return 'status-completed';
+        default: return 'status-unknown';
+      }
+    }
+
+    // Функция для получения текста статуса
+    function getStatusText(status) {
+      switch(status) {
+        case 'pending': return 'В обработке';
+        case 'completed': return 'Выполнен';
+        default: return 'Неизвестен';
+      }
+    }
+
+    // Функция для получения отзыва для конкретного заказа
+    async function getReviewForOrder(orderId, userId) {
+      try {
+        const response = await fetch(`http://localhost:3000/reviews/order/${orderId}?userId=${userId}`);
+        console.log('Поиск отзыва для заказа:', orderId, 'пользователя:', userId);
+        
+        if (!response.ok) {
+          console.log('Ошибка при поиске отзыва:', response.status);
+          return null;
+        }
+        
+        const review = await response.json();
+        console.log('Найденный отзыв для заказа', orderId, ':', review);
+        return review; // возвращает null если отзыва нет
+      } catch (error) {
+        console.error('Ошибка при поиске отзыва:', error);
+        return null;
+      }
+    }
+
+    // Функция для отображения рейтинга звездами
+    function displayRatingStars(rating) {
+      return `${'★'.repeat(rating)}${'☆'.repeat(5 - rating)} (${rating}/5)`;
+    }
+
+    async function loadProfile() {
+      // Сначала проверяем авторизацию
+      const currentUser = checkAuth();
+      if (!currentUser) {
+        console.log('Пользователь не авторизован, перенаправляем на регистрацию');
+        window.location.href = 'RegisterPage.html';
+        return;
+      }
+
+      const userIdFromURL = getUserIdFromURL();
+      console.log('Текущий пользователь ID:', currentUser.id);
+      console.log('UserId из URL:', userIdFromURL);
+
+      let targetUserId = userIdFromURL;
+
+      // Если userId из URL отсутствует или не совпадает с текущим пользователем
+      if (!targetUserId || targetUserId != currentUser.id) {
+        console.log('ID не совпадают или отсутствуют, используем ID текущего пользователя');
+        targetUserId = currentUser.id;
+        
+        // Добавляем userId в URL только если его там нет (избегаем бесконечного редиректа)
+        if (!userIdFromURL) {
+          const newUrl = `${window.location.pathname}?userId=${targetUserId}`;
+          window.history.replaceState(null, '', newUrl);
+          console.log('URL обновлен:', newUrl);
+        }
+      }
+
+      try {
+        console.log('Загружаем профиль для userId:', targetUserId);
+        const response = await fetch(`http://localhost:3000/profile?userId=${targetUserId}`);
+        
+        console.log('Статус ответа:', response.status);
+        if (!response.ok) {
+          throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Ответ сервера:', data);
+
+        // Заполняем данные пользователя из localStorage, если сервер не вернул данные
+        if (!data || !data.user) {
+          console.log('Сервер не вернул данные пользователя, используем данные из localStorage');
+          userFirstName.textContent = currentUser.firstName || '';
+          userLastName.textContent = currentUser.lastName || '';
+          userEmail.textContent = currentUser.email || '';
+          userPhone.textContent = currentUser.phone || '';
+        } else {
+          // Заполняем данные пользователя из ответа сервера
+          userFirstName.textContent = data.user.firstName || '';
+          userLastName.textContent = data.user.lastName || '';
+          userEmail.textContent = data.user.email || '';
+          userPhone.textContent = data.user.phone || '';
+        }
+
+        // Отображение заказов
+        ordersContainer.innerHTML = '';
+        if (data && data.orders && data.orders.length > 0) {
+          // Сортируем заказы по ID (новые первыми)
+          const sortedOrders = data.orders.sort((a, b) => b.id - a.id);
+          
+          // Для каждого заказа проверяем наличие отзыва
+          for (const order of sortedOrders) {
+            const div = document.createElement('div');
+            div.classList.add('order-item');
+            
+            let filesHtml = '<div class="no-files">Файлы отсутствуют</div>';
+            try {
+              const files = order.file_urls ? JSON.parse(order.file_urls) : [];
+              if (files.length > 0) {
+                filesHtml = `
+                  <div class="files-title">Прикрепленные файлы:</div>
+                  <div class="files-list">
+                    ${files.map(filePath => {
+                      const url = filePath.startsWith('http') ? filePath : `http://localhost:3000${filePath}`;
+                      const fileName = filePath.split('/').pop();
+                      const fileIcon = getFileIcon(fileName);
+                      return `
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="file-link">
+                          <span class="file-icon">${fileIcon}</span>
+                          ${fileName}
+                        </a>
+                      `;
+                    }).join('')}
+                  </div>
+                `;
+              }
+            } catch (error) {
+              console.error('Ошибка при обработке файлов:', error);
+              filesHtml = '<div class="no-files">Ошибка при загрузке файлов</div>';
+            }
+
+            // Получаем отзыв для этого конкретного заказа
+            const reviewForThisOrder = await getReviewForOrder(order.id, targetUserId);
+            console.log('Для заказа', order.id, 'найден отзыв:', reviewForThisOrder);
+
+            let reviewHtml = '';
+            if (reviewForThisOrder && reviewForThisOrder.rating) {
+              // Отображаем реальную оценку
+              reviewHtml = `
+                <div class="existing-review">
+                  <strong>Ваша оценка:</strong>
+                  <div class="review-rating">${displayRatingStars(reviewForThisOrder.rating)}</div>
+                </div>
+              `;
+            } else {
+              // Отзыва нет - показываем кнопку
+              reviewHtml = `
+                <button class="review-btn" data-order-id="${order.id}" data-service-id="${order.service_id}" data-service-name="${order.service_name || 'Услуга'}">
+                  Оставить отзыв
+                </button>
+              `;
+            }
+
+            div.innerHTML = `
+              <div class="order-header">
+                <h3 class="order-title">Заказ №${order.id} - ${order.service_name || 'Услуга'}</h3>
+                <span class="order-status ${getStatusClass(order.status)}">
+                  ${getStatusText(order.status)}
+                </span>
+              </div>
+              
+              <div class="order-details">
+                ${order.description ? `
+                  <div class="order-description">
+                    <strong>Описание задачи:</strong><br>
+                    ${order.description}
+                  </div>
+                ` : ''}
+                
+                <div class="order-files">
+                  ${filesHtml}
+                </div>
+              </div>
+              
+              <div class="order-meta">
+                <span class="order-id">ID заказа: ${order.id}</span>
+                ${order.status === 'completed' ? `
+                  <div class="review-section">
+                    ${reviewHtml}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+            
+            ordersContainer.appendChild(div);
+          }
+
+          // Добавляем обработчики для кнопок отзывов
+          document.querySelectorAll('.review-btn').forEach(button => {
+            button.addEventListener('click', function() {
+              const orderId = this.getAttribute('data-order-id');
+              const serviceId = this.getAttribute('data-service-id');
+              const serviceName = this.getAttribute('data-service-name');
+              
+              // Проверяем, не оставлен ли уже отзыв (дополнительная проверка)
+              getReviewForOrder(orderId, targetUserId).then(review => {
+                if (review) {
+                  alert('Вы уже оставили отзыв на этот заказ!');
+                  return;
+                }
+                
+                // Сохраняем данные в localStorage для использования на странице отзывов
+                localStorage.setItem('reviewOrderData', JSON.stringify({
+                  orderId: orderId,
+                  serviceId: serviceId,
+                  serviceName: serviceName
+                }));
+                
+                // Переходим на страницу отзывов
+                window.location.href = 'ReviewsPage.html';
+              });
+            });
+          });
+
+        } else {
+          ordersContainer.innerHTML = `
+            <div class="no-orders">
+              <h3>У вас пока нет заказов</h3>
+              <p>Перейдите в раздел "Услуги" чтобы оформить первый заказ!</p>
+              <a href="ServicePage.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #800000; color: white; text-decoration: none; border-radius: 6px;">
+                Перейти к услугам
+              </a>
+            </div>
+          `;
+        }
+
+      } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        
+        // Используем данные из localStorage при ошибке
+        userFirstName.textContent = currentUser.firstName || '';
+        userLastName.textContent = currentUser.lastName || '';
+        userEmail.textContent = currentUser.email || '';
+        userPhone.textContent = currentUser.phone || '';
+        ordersContainer.innerHTML = `
+          <div class="no-orders">
+            <h3>Ошибка загрузки заказов</h3>
+            <p>${error.message}</p>
+            <button onclick="loadProfile()" style="margin-top: 15px; padding: 10px 20px; background: #800000; color: white; border: none; border-radius: 6px; cursor: pointer;">
+              Попробовать снова
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProfile);
+  </script>
+</body>
+</html>
