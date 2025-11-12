@@ -16,77 +16,165 @@ a {
   text-decoration: none;
 }
 
+/* Header Styles */
 header {
   background: #750104;
   color: white;
-  padding: 15px 60px;
+  padding: 15px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   top: 0;
   z-index: 100;
+  position: relative;
 }
 
 .logo {
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
 
 .logo span {
   font-weight: 900;
-  font-size: 30px;
+  font-size: 24px;
 }
 
 nav {
   display: flex;
-  gap: 80px;
-  font-size: 16px;
+  gap: 20px;
+  font-size: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 nav a {
   color: white;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .user-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   fill: white;
   cursor: pointer;
 }
 
+/* Service Display */
 #serviceDisplay {
-  max-width: 900px;
-  margin: 20px auto 40px;
-  padding: 30px 35px;
+  max-width: 100%;
+  margin: 15px 15px 30px;
+  padding: 20px;
   background-color: #800000;
   color: white;
-  border-radius: 16px;
+  border-radius: 12px;
   display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 20px;
   user-select: none;
 }
 
 #serviceDisplay .left, #serviceDisplay .right {
-  flex: 1 1 280px;
+  flex: 1 1 100%;
 }
 
-/* Стили только для кнопки выбора файлов в файловом инпуте */
+#serviceDisplay .left {
+  font-weight: 300;
+  font-size: 24px;
+  line-height: 1.1;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+#serviceDisplay .left small {
+  font-weight: 300;
+  font-size: 12px;
+  display: block;
+  margin-top: 5px;
+  opacity: 0.7;
+}
+
+#serviceDisplay .left .price {
+  margin-top: 10px;
+  font-weight: 300;
+  font-size: 18px;
+}
+
+#serviceDisplay .right {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+#serviceDisplay .right ul {
+  padding-left: 15px;
+  list-style-type: none;
+  text-align: left;
+}
+
+#serviceDisplay .right ul li::before {
+  content: "–";
+  color: white;
+  padding-right: 5px;
+  font-weight: 900;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+/* Form Styles */
+form.order-form {
+  max-width: 100%;
+  margin: 0 15px 40px;
+  padding: 15px;
+  background: #f3f0f0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #600000;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+form.order-form label {
+  font-weight: 700;
+  margin-bottom: 3px;
+  font-size: 14px;
+}
+
+form.order-form textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  width: 100%;
+}
+
+form.order-form input[type="file"] {
+  outline: none;
+  width: 100%;
+}
+
+/* File Upload Buttons */
 input[type="file"]::-webkit-file-upload-button {
   background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  margin-right: 15px;
+  margin-right: 10px;
   transition: all 0.3s ease;
   font-family: 'Montserrat', sans-serif;
+  width: auto;
 }
 
 input[type="file"]::-webkit-file-upload-button:hover {
@@ -105,14 +193,15 @@ input[type="file"]::file-selector-button {
   background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  margin-right: 15px;
+  margin-right: 10px;
   transition: all 0.3s ease;
   font-family: 'Montserrat', sans-serif;
+  width: auto;
 }
 
 input[type="file"]::file-selector-button:hover {
@@ -126,90 +215,6 @@ input[type="file"]::file-selector-button:active {
   box-shadow: 0 2px 4px rgba(152, 0, 2, 0.3);
 }
 
-/* Адаптивность для мобильных */
-@media (max-width: 768px) {
-  input[type="file"]::-webkit-file-upload-button,
-  input[type="file"]::file-selector-button {
-    padding: 10px 20px;
-    font-size: 13px;
-    margin-right: 12px;
-  }
-}
-
-#serviceDisplay .left {
-  font-weight: 300;
-  font-size: 30px;
-  line-height: 1.1;
-  margin-bottom: 10px;
-}
-
-#serviceDisplay .left small {
-  font-weight: 300;
-  font-size: 14px;
-  display: block;
-  margin-top: -10px;
-  opacity: 0.7;
-}
-
-#serviceDisplay .left .price {
-  margin-top: 15px;
-  font-weight: 300;
-  font-size: 22px;
-}
-
-#serviceDisplay .right {
-  font-weight: 700;
-  font-size: 15px;
-  line-height: 1.3;
-}
-
-#serviceDisplay .right ul {
-  padding-left: 18px;
-  list-style-type: none;
-}
-
-#serviceDisplay .right ul li::before {
-  content: "–";
-  color: white;
-  padding-right: 5px;
-  font-weight: 900;
-  font-size: 20px;
-  vertical-align: middle;
-}
-
-form.order-form {
-  max-width: 900px;
-  margin: 0 auto 60px;
-  padding: 20px;
-  background: #f3f0f0;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  color: #600000;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-form.order-form label {
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-form.order-form textarea {
-  resize: vertical;
-  min-height: 100px;
-  font-size: 14px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-family: inherit;
-}
-
-form.order-form input[type="file"] {
-  outline: none;
-}
-
 form.order-form button {
   background-color: #a22;
   color: white;
@@ -217,12 +222,13 @@ form.order-form button {
   border-radius: 8px;
   padding: 12px 20px;
   font-weight: 900;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   user-select: none;
   transition: background-color 0.3s;
-  max-width: 200px;
-  align-self: flex-start;
+  width: 100%;
+  max-width: none;
+  align-self: center;
 }
 
 form.order-form button:hover {
@@ -230,81 +236,343 @@ form.order-form button:hover {
 }
 
 #orderFeedback {
-  max-width: 900px;
-  margin: 0 auto 20px;
+  max-width: 100%;
+  margin: 0 15px 15px;
   color: #a22;
   font-weight: 600;
+  font-size: 14px;
+  text-align: center;
 }
 
+/* Footer Styles */
 footer {
   background: #750104;
   color: white;
   display: flex;
+  flex-direction: column;
   width: 100%;
   margin: 0 auto;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   user-select: none;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  height: 150px;
-  padding: 0 80px;
+  height: auto;
+  padding: 20px;
+  gap: 15px;
+  text-align: center;
 }
 
 .footer-logo {
   font-weight: 900;
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: -0.02em;
   cursor: default;
 }
 
 .social-icons {
   display: flex;
-  gap: 25px;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .social-icons img {
   fill: white;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   transition: fill 0.3s ease;
 }
 
-/* Responsive */
+/* Стили для кнопки "Наверх" */
+#scrollToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#scrollToTop:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+#scrollToTop:active {
+  transform: translateY(0);
+}
+
+/* Additional Responsive Styles */
 @media (max-width: 900px) {
   .top-text {
-    font-size: 44px;
-  }
-  .section-why-me h2, .cases-title, .section-what-can h2 {
     font-size: 36px;
   }
+  .section-why-me h2, .cases-title, .section-what-can h2 {
+    font-size: 28px;
+  }
   .floating-logo {
-    top: 70px;
-    right: 20px;
-    width: 80px;
-    height: 80px;
-    font-size: 12px;
+    top: 60px;
+    right: 15px;
+    width: 60px;
+    height: 60px;
+    font-size: 10px;
   }
   .wave-text-container {
     width: 100%;
-    font-size: 14px;
+    font-size: 12px;
   }
   main {
-    margin: 30px 10px 60px;
+    margin: 20px 10px 40px;
   }
   .cases-grid {
     flex-direction: column;
   }
   .case-item {
-    max-height: 300px;
-  }
-  footer {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
+    max-height: 250px;
   }
   .photo-woman {
     display: none;
+  }
+}
+
+/* Mobile First Approach - Extra Small Devices */
+@media (max-width: 480px) {
+  header {
+    padding: 12px 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .logo {
+    font-size: 14px;
+  }
+  
+  .logo span {
+    font-size: 20px;
+  }
+  
+  nav {
+    gap: 15px;
+    font-size: 12px;
+    order: 3;
+    width: 100%;
+    margin-top: 10px;
+    justify-content: space-around;
+  }
+  
+  .user-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  #serviceDisplay {
+    margin: 10px 10px 20px;
+    padding: 15px;
+    border-radius: 8px;
+    gap: 15px;
+  }
+  
+  #serviceDisplay .left {
+    font-size: 20px;
+  }
+  
+  #serviceDisplay .left small {
+    font-size: 11px;
+  }
+  
+  #serviceDisplay .left .price {
+    font-size: 16px;
+  }
+  
+  #serviceDisplay .right {
+    font-size: 13px;
+  }
+  
+  form.order-form {
+    margin: 0 10px 30px;
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  form.order-form textarea {
+    min-height: 70px;
+    font-size: 13px;
+    padding: 8px;
+  }
+  
+  input[type="file"]::-webkit-file-upload-button,
+  input[type="file"]::file-selector-button {
+    padding: 8px 16px;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+  
+  form.order-form button {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  footer {
+    padding: 15px;
+    gap: 12px;
+    font-size: 13px;
+  }
+  
+  .footer-logo {
+    font-size: 16px;
+  }
+  
+  .social-icons {
+    gap: 12px;
+  }
+  
+  .social-icons img {
+    width: 35px;
+    height: 35px;
+  }
+  
+  #scrollToTop {
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  header {
+    padding: 15px 30px;
+  }
+  
+  nav {
+    gap: 40px;
+    font-size: 15px;
+  }
+  
+  #serviceDisplay {
+    margin: 20px 30px 40px;
+    padding: 25px;
+  }
+  
+  form.order-form {
+    margin: 0 30px 50px;
+    padding: 20px;
+  }
+  
+  footer {
+    padding: 25px 40px;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 120px;
+  }
+}
+
+/* Large Desktop Styles */
+@media (min-width: 1025px) {
+  header {
+    padding: 15px 60px;
+  }
+  
+  nav {
+    gap: 80px;
+    font-size: 16px;
+  }
+  
+  #serviceDisplay {
+    max-width: 900px;
+    margin: 20px auto 40px;
+    padding: 30px 35px;
+    flex-direction: row;
+    gap: 40px;
+  }
+  
+  #serviceDisplay .left, #serviceDisplay .right {
+    flex: 1 1 280px;
+    text-align: left;
+  }
+  
+  form.order-form {
+    max-width: 900px;
+    margin: 0 auto 60px;
+    padding: 20px;
+  }
+  
+  form.order-form button {
+    max-width: 200px;
+    align-self: flex-start;
+    width: auto;
+  }
+  
+  #orderFeedback {
+    max-width: 900px;
+    margin: 0 auto 20px;
+  }
+  
+  footer {
+    flex-direction: row;
+    padding: 0 80px;
+    height: 150px;
+    text-align: left;
+  }
+  
+  #scrollToTop {
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  form.order-form button:hover {
+    background-color: #a22;
+  }
+  
+  input[type="file"]::-webkit-file-upload-button:hover,
+  input[type="file"]::file-selector-button:hover {
+    background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
+    transform: none;
+    box-shadow: none;
+  }
+  
+  #scrollToTop:hover {
+    background-color: #000;
+    transform: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .social-icons img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Print Styles */
+@media print {
+  #scrollToTop,
+  form.order-form button,
+  input[type="file"] {
+    display: none !important;
   }
 }

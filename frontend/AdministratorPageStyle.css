@@ -16,86 +16,105 @@ a {
   text-decoration: none;
 }
 
+/* Header Styles - Mobile First */
 header {
   background: #750104;
   color: white;
-  padding: 15px 60px;
+  padding: 12px 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   top: 0;
   z-index: 100;
+  position: relative;
+  flex-wrap: wrap;
 }
 
 .logo {
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
 
 .logo span {
   font-weight: 900;
-  font-size: 30px;
+  font-size: 24px;
 }
 
 nav {
   display: flex;
-  gap: 80px;
-  font-size: 16px;
+  gap: 20px;
+  font-size: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  order: 3;
+  width: 100%;
+  margin-top: 10px;
 }
 
 nav a {
   color: white;
-  font-weight: 600px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .user-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   fill: white;
   cursor: pointer;
 }
 
+/* Section Blocks */
 .section-block {
-  max-width: 900px;
+  max-width: 100%;
   background: white;
-  padding: 20px;
-  margin: 20px auto;
+  padding: 15px;
+  margin: 15px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
 }
 
 h2 {
   margin-top: 0;
+  font-size: 20px;
+  text-align: center;
 }
 
 /* Стили для управления дубликатами */
 .duplicate-controls {
-  margin: 20px 0;
+  margin: 15px 0;
   display: flex;
-  gap: 15px;
+  gap: 10px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .btn-check {
-  background: #007bff;
+  background: #dc3545;
   color: white;
   border: none;
-  padding: 12px 20px;
+  padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
+  flex: 1;
+  min-width: 140px;
+  text-align: center;
 }
 
 .btn-cleanup {
   background: #dc3545;
   color: white;
   border: none;
-  padding: 12px 20px;
+  padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
+  flex: 1;
+  min-width: 140px;
+  text-align: center;
 }
 
 .btn-check:hover {
@@ -109,39 +128,44 @@ h2 {
 .duplicates-results {
   background: #f8f9fa;
   border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 20px;
-  margin: 20px 0;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 15px 0;
+  font-size: 14px;
 }
 
 .duplicate-group {
   background: white;
   border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 15px;
-  margin: 10px 0;
+  border-radius: 4px;
+  padding: 12px;
+  margin: 8px 0;
 }
 
 .duplicate-group h4 {
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
   color: #495057;
+  font-size: 15px;
 }
 
 .duplicate-ids {
   font-family: monospace;
   background: #f1f3f4;
-  padding: 8px;
-  border-radius: 4px;
-  margin: 5px 0;
+  padding: 6px;
+  border-radius: 3px;
+  margin: 4px 0;
+  font-size: 12px;
+  word-break: break-all;
 }
 
 .cleanup-results {
   background: #d4edda;
   border: 1px solid #c3e6cb;
-  border-radius: 8px;
-  padding: 20px;
-  margin: 20px 0;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 15px 0;
   color: #155724;
+  font-size: 14px;
 }
 
 .cleanup-results.error {
@@ -155,17 +179,27 @@ h2 {
 #showCompletedBtn,
 #showAllBtn,
 #logoutBtn {
-  padding: 10px 15px;
+  padding: 10px 12px;
   background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   color: white;
-  font-weight: 900;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
   transition: background 0.3s ease;
-  margin-right: 10px;
-  margin-bottom: 10px;
+  margin: 5px;
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+}
+
+#logoutBtn {
+  background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 15px auto;
 }
 
 #showPendingBtn:hover,
@@ -177,14 +211,14 @@ h2 {
 .orders-list,
 .portfolio-list,
 .services-list {
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: auto;
   border: 1px solid #ddd;
   padding: 10px;
-  margin-top: 15px;
+  margin-top: 12px;
   border-radius: 5px;
   background: #fafafa;
-  font-size: 0.95em;
+  font-size: 14px;
 }
 
 .order-item,
@@ -193,14 +227,15 @@ h2 {
   margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
   padding-bottom: 8px;
+  font-size: 14px;
 }
 
 /* Стили для форм - ВЕРТИКАЛЬНОЕ РАСПОЛОЖЕНИЕ */
 form {
-  margin-top: 15px;
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
   align-items: stretch;
 }
 
@@ -209,11 +244,11 @@ form input,
 form textarea,
 form input[type="file"] {
   width: 100%;
-  padding: 12px 15px;
+  padding: 10px 12px;
   border: 2px solid #980002;
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   color: #750104;
   transition: border-color 0.3s ease;
   font-family: 'Montserrat', sans-serif;
@@ -228,7 +263,7 @@ form textarea:focus {
 /* Стили для textarea */
 form textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 70px;
 }
 
 /* Стили для файлового input */
@@ -241,25 +276,26 @@ form input[type="file"]::file-selector-button {
   background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
-  margin-right: 10px;
+  margin-right: 8px;
+  font-size: 12px;
 }
 
 /* Стили для кнопок форм */
 form button {
-  padding: 15px 0;
+  padding: 12px 0;
   background: linear-gradient(90deg, rgba(152, 0, 2, 1) 0%, rgba(117, 1, 4, 1) 100%);
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   color: white;
-  font-weight: 900;
-  font-size: 20px;
+  font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
   transition: background 0.3s ease;
-  margin-top: 10px;
+  margin-top: 8px;
   width: 100%;
 }
 
@@ -271,22 +307,25 @@ form button:hover {
 .status-pending {
   color: #d9534f;
   font-weight: bold;
+  font-size: 13px;
 }
 
 .status-completed {
   color: #5cb85c;
   font-weight: bold;
+  font-size: 13px;
 }
 
 .complete-btn {
   background-color: #5cb85c;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
+  font-size: 12px;
+  margin-top: 8px;
+  width: 100%;
 }
 
 .complete-btn:hover {
@@ -300,104 +339,337 @@ form button:hover {
 
 .order-item {
   border: 1px solid #ddd;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
   background-color: #f9f9f9;
+  font-size: 14px;
 }
 
 .orders-list {
-  max-height: 600px;
+  max-height: 500px;
   overflow-y: auto;
 }
 
+/* Footer Styles */
 footer {
   background: #750104;
   color: white;
   display: flex;
+  flex-direction: column;
   width: 100%;
   margin: 0 auto;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   user-select: none;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  height: 150px;
-  padding: 0 80px;
+  height: auto;
+  padding: 20px 15px;
+  gap: 15px;
+  text-align: center;
 }
 
 .footer-logo {
   font-weight: 900;
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: -0.02em;
   cursor: default;
 }
 
 .social-icons {
   display: flex;
-  gap: 25px;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .social-icons img {
   fill: white;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   transition: fill 0.3s ease;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-  .top-text {
-    font-size: 44px;
-  }
+/* Стили для кнопки "Наверх" */
+#scrollToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
 
-  footer {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
-    padding: 20px;
-    height: auto;
-  }
+#scrollToTop:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
 
-  .photo-woman {
-    display: none;
-  }
+#scrollToTop:active {
+  transform: translateY(0);
+}
 
+/* Tablet Styles */
+@media (min-width: 768px) {
   header {
-    padding: 15px 20px;
+    padding: 15px 30px;
+    flex-wrap: nowrap;
   }
-
+  
   nav {
-    gap: 30px;
+    order: 0;
+    width: auto;
+    margin-top: 0;
+    gap: 40px;
+    font-size: 15px;
   }
+  
+  .logo {
+    font-size: 17px;
+  }
+  
+  .logo span {
+    font-size: 26px;
+  }
+  
+  .section-block {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  h2 {
+    font-size: 22px;
+    text-align: left;
+  }
+  
+  .duplicate-controls {
+    justify-content: flex-start;
+  }
+  
+  .btn-check,
+  .btn-cleanup {
+    flex: none;
+    min-width: 160px;
+  }
+  
+  #showPendingBtn,
+  #showCompletedBtn,
+  #showAllBtn {
+    flex: none;
+    min-width: 140px;
+  }
+  
+  .complete-btn {
+    width: auto;
+  }
+  
+  footer {
+    flex-direction: row;
+    padding: 25px 40px;
+    height: 120px;
+    text-align: left;
+  }
+}
 
+/* Desktop Styles */
+@media (min-width: 1024px) {
+  header {
+    padding: 15px 60px;
+  }
+  
+  nav {
+    gap: 80px;
+    font-size: 16px;
+  }
+  
+  .logo {
+    font-size: 18px;
+  }
+  
+  .logo span {
+    font-size: 30px;
+  }
+  
+  .section-block {
+    max-width: 900px;
+    padding: 25px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+  
+  form input,
+  form textarea,
+  form input[type="file"] {
+    padding: 12px 15px;
+    font-size: 16px;
+  }
+  
+  form button {
+    padding: 15px 0;
+    font-size: 18px;
+  }
+  
+  .btn-check,
+  .btn-cleanup {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  #showPendingBtn,
+  #showCompletedBtn,
+  #showAllBtn {
+    padding: 10px 15px;
+    font-size: 16px;
+  }
+  
+  footer {
+    padding: 0 80px;
+    height: 150px;
+  }
+  
+  .social-icons {
+    gap: 25px;
+  }
+  
+  .social-icons img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  #scrollToTop {
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+  header {
+    padding: 10px 12px;
+  }
+  
+  .logo {
+    font-size: 14px;
+  }
+  
+  .logo span {
+    font-size: 20px;
+  }
+  
+  nav {
+    gap: 15px;
+    font-size: 12px;
+  }
+  
+  .user-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .section-block {
+    margin: 10px;
+    padding: 12px;
+  }
+  
+  h2 {
+    font-size: 18px;
+  }
+  
+  .duplicate-controls {
+    flex-direction: column;
+  }
+  
+  .btn-check,
+  .btn-cleanup {
+    width: 100%;
+  }
+  
   #showPendingBtn,
   #showCompletedBtn,
   #showAllBtn {
     width: 100%;
-    margin-right: 0;
-    margin-bottom: 10px;
+    margin: 3px 0;
   }
-
-  .section-block {
-    margin: 20px 15px;
-    padding: 15px;
-  }
-
-  form {
-    gap: 12px;
-  }
-
+  
   form input,
   form textarea,
   form input[type="file"] {
-    padding: 10px 12px;
-    font-size: 14px;
+    padding: 8px 10px;
+    font-size: 13px;
   }
-
+  
   form button {
-    padding: 12px 0;
-    font-size: 18px;
+    padding: 10px 0;
+    font-size: 15px;
+  }
+  
+  footer {
+    padding: 15px;
+    gap: 12px;
+    font-size: 13px;
+  }
+  
+  .footer-logo {
+    font-size: 16px;
+  }
+  
+  .social-icons img {
+    width: 35px;
+    height: 35px;
+  }
+  
+  #scrollToTop {
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  form button:hover,
+  .btn-check:hover,
+  .btn-cleanup:hover,
+  #showPendingBtn:hover,
+  #showCompletedBtn:hover,
+  #showAllBtn:hover,
+  .complete-btn:hover {
+    transform: none;
+  }
+  
+  #scrollToTop:hover {
+    background-color: #000;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .social-icons img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 }

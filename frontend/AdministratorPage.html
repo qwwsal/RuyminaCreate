@@ -9,7 +9,9 @@
 </head>
 <body>
   <header>
-    <img class="logo" src="./Image/logo.svg" alt="Логотип" />
+    <a href="./MainPage.html" class="logo-link">
+      <img class="logo" src="./Image/logo.svg" alt="Логотип" />
+    </a>
 
     <nav role="navigation" aria-label="Главное меню">
       <a href="./MainPage.html">Главная</a>
@@ -89,7 +91,9 @@
 
   <footer>
     <div class="footer-logo">
-      <img class="logo" src="./Image/logo.svg" />
+      <a href="./MainPage.html" class="logo-link">
+        <img class="logo" src="./Image/logo.svg" alt="Логотип" />
+      </a>
     </div>
     <div>Я в социальных сетях</div>
     <div class="social-icons" role="list" aria-label="Социальные сети">
@@ -105,7 +109,34 @@
     </div>
   </footer>
 
+  <!-- Кнопка "Наверх" -->
+  <button id="scrollToTop" aria-label="Наверх" title="Наверх">
+    ↑
+  </button>
+
   <script>
+    // Функция для кнопки "Наверх"
+    function initScrollToTop() {
+      const scrollToTopBtn = document.getElementById('scrollToTop');
+      
+      // Показываем/скрываем кнопку при прокрутке
+      window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+          scrollToTopBtn.style.display = 'flex';
+        } else {
+          scrollToTopBtn.style.display = 'none';
+        }
+      });
+      
+      // Плавная прокрутка наверх при клике
+      scrollToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    }
+
     // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ API URL ДЛЯ ПРОДАКШЕНА
     const API_URL = window.location.origin;
     console.log('API URL:', API_URL);
@@ -367,6 +398,9 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Инициализируем кнопку "Наверх"
+      initScrollToTop();
+      
       const userStr = localStorage.getItem('user');
       if (!userStr) {
         window.location.href = './RegisterPage.html';
