@@ -407,14 +407,17 @@ footer {
     margin-bottom: 40px;
   }
   
+  /* ОСНОВНОЕ ИСПРАВЛЕНИЕ: Делаем блок регистрации шире на десктопе */
   .container {
-    width: 500px;
-    padding: 40px 30px;
+    width: 600px; /* Увеличиваем ширину с 500px до 600px */
+    max-width: 600px;
+    padding: 45px 40px;
     margin: 40px auto;
   }
   
   h2 {
     font-size: 36px;
+    margin-bottom: 30px;
   }
   
   form {
@@ -436,12 +439,23 @@ footer {
   input[type="email"],
   input[type="tel"],
   input[type="password"] {
-    padding: 12px 15px;
+    padding: 14px 18px;
+    font-size: 16px;
   }
   
   button {
-    padding: 15px 0;
+    padding: 16px 0;
     font-size: 20px;
+    margin-top: 15px;
+  }
+  
+  .error-message {
+    font-size: 15px;
+    min-height: 22px;
+  }
+  
+  label {
+    font-size: 16px;
   }
   
   footer {
@@ -464,6 +478,53 @@ footer {
     width: 50px;
     height: 50px;
     font-size: 20px;
+  }
+}
+
+/* Большие десктопы */
+@media (min-width: 1200px) {
+  .container {
+    width: 650px; /* Еще шире на больших экранах */
+    max-width: 650px;
+    padding: 50px 45px;
+  }
+  
+  h2 {
+    font-size: 38px;
+  }
+  
+  form {
+    gap: 22px 35px;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"] {
+    padding: 15px 20px;
+    font-size: 17px;
+  }
+  
+  button {
+    padding: 17px 0;
+    font-size: 21px;
+  }
+}
+
+/* Очень большие экраны */
+@media (min-width: 1440px) {
+  .container {
+    width: 700px; /* Максимальная ширина для очень больших экранов */
+    max-width: 700px;
+    padding: 50px 50px;
+  }
+  
+  h2 {
+    font-size: 40px;
+  }
+  
+  form {
+    gap: 25px 40px;
   }
 }
 

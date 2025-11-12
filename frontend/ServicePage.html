@@ -156,16 +156,22 @@
         serviceBlock.setAttribute('data-service-id', service.id);
 
         serviceBlock.innerHTML = `
-          <div class="left">
-            <h2>${service.name || 'Название услуги'}</h2>
-            ${service.short_description ? `<small>${service.short_description}</small>` : ''}
-            <div class="price">от ${service.price ? service.price.toLocaleString('ru-RU') : '0'} р</div>
-          </div>
-          <div class="right">
-            <p>${service.description || 'Описание услуги'}</p>
-          </div>
-          <a href="#" class="order-button" data-service-id="${service.id}" aria-label="Заказать услугу ${service.name}" style="display: block; margin: 0 auto; text-align: center; width: fit-content;">Заказать услугу</a>
-        `;
+  <div class="service-item-content">
+    <div class="service-item-main">
+      <div class="left">
+        <h2>${service.name || 'Название услуги'}</h2>
+        ${service.short_description ? `<small>${service.short_description}</small>` : ''}
+        <div class="price">от ${service.price ? service.price.toLocaleString('ru-RU') : '0'} р</div>
+      </div>
+      <div class="right">
+        <p>${service.description || 'Описание услуги'}</p>
+      </div>
+    </div>
+    <div class="service-item-footer">
+      <a href="#" class="order-button" data-service-id="${service.id}" aria-label="Заказать услугу ${service.name}">Заказать услугу</a>
+    </div>
+  </div>
+`;
 
         container.appendChild(serviceBlock);
       });

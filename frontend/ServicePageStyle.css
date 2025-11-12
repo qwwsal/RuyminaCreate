@@ -123,6 +123,7 @@ h2, h3 {
   margin-top: 4px;
 }
 
+/* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ КАРТОЧЕК УСЛУГ */
 section.service-item {
   background-color: #800000;
   color: white;
@@ -133,10 +134,12 @@ section.service-item {
   flex-direction: column;
   gap: 20px;
   user-select: none;
+  position: relative;
+  min-height: 300px;
 }
 
 section.service-item .left, section.service-item .right {
-  flex: 1 1 100%;
+  flex: 1;
 }
 
 section.service-item .left {
@@ -166,6 +169,7 @@ section.service-item .right {
   font-size: 14px;
   line-height: 1.3;
   text-align: center;
+  flex-grow: 1;
 }
 
 section.service-item .right ul {
@@ -183,25 +187,51 @@ section.service-item .right ul li::before {
   vertical-align: middle;
 }
 
+/* НОВЫЕ СТИЛИ ДЛЯ КНОПКИ ВНИЗУ КАРТОЧКИ */
+.service-item-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 15px;
+}
+
+.service-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-grow: 1;
+}
+
+.service-item-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+}
+
 .order-button {
   background-color: #a22;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 30px;
   font-weight: 700;
   text-decoration: none;
   border-radius: 8px;
   user-select: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   display: block;
   text-align: center;
   width: 100%;
-  margin: 15px 0 0 0;
+  max-width: 200px;
   font-size: 14px;
+  border: 2px solid #a22;
 }
 
 .order-button:hover {
-  background-color: #7a1717;
+  background-color: transparent;
+  color: #a22;
+  transform: translateY(-2px);
 }
 
 .error-message {
@@ -359,12 +389,19 @@ footer {
     font-size: 13px;
   }
   
+  /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ПЛАНШЕТОВ */
   section.service-item {
     padding: 25px 30px;
     margin-bottom: 30px;
+    flex-direction: column;
+    gap: 25px;
+    border-radius: 14px;
+    min-height: 320px;
+  }
+  
+  .service-item-main {
     flex-direction: row;
     gap: 30px;
-    border-radius: 14px;
   }
   
   section.service-item .left, section.service-item .right {
@@ -390,11 +427,14 @@ footer {
     text-align: left;
   }
   
+  .service-item-footer {
+    padding-top: 25px;
+  }
+  
   .order-button {
-    width: auto;
-    margin: 0 0 0 15px;
-    align-self: flex-start;
-    display: inline-block;
+    max-width: 220px;
+    font-size: 15px;
+    padding: 14px 35px;
   }
   
   footer {
@@ -464,11 +504,17 @@ footer {
     margin-top: 6px;
   }
   
+  /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ДЕСКТОПА */
   section.service-item {
     padding: 30px 35px;
     margin-bottom: 40px;
-    gap: 40px;
+    gap: 30px;
     border-radius: 16px;
+    min-height: 350px;
+  }
+  
+  .service-item-main {
+    gap: 40px;
   }
   
   section.service-item .left {
@@ -491,6 +537,16 @@ footer {
   
   section.service-item .right ul li::before {
     font-size: 20px;
+  }
+  
+  .service-item-footer {
+    padding-top: 30px;
+  }
+  
+  .order-button {
+    max-width: 240px;
+    font-size: 16px;
+    padding: 15px 40px;
   }
   
   footer {
@@ -570,11 +626,17 @@ footer {
     font-size: 11px;
   }
   
+  /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ МОБИЛЬНЫХ */
   section.service-item {
     padding: 15px;
     margin-bottom: 20px;
     gap: 15px;
     border-radius: 10px;
+    min-height: 280px;
+  }
+  
+  .service-item-main {
+    gap: 15px;
   }
   
   section.service-item .left {
@@ -603,10 +665,14 @@ footer {
     font-size: 14px;
   }
   
+  .service-item-footer {
+    padding-top: 15px;
+  }
+  
   .order-button {
-    padding: 8px 16px;
+    padding: 10px 20px;
     font-size: 13px;
-    margin-top: 10px;
+    max-width: 180px;
   }
   
   footer {
@@ -637,6 +703,8 @@ footer {
 @media (hover: none) and (pointer: coarse) {
   .order-button:hover {
     background-color: #a22;
+    color: white;
+    transform: none;
   }
   
   #scrollToTop:hover {
