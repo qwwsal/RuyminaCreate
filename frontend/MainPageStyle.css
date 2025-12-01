@@ -108,7 +108,7 @@ main {
 }
 
 .about-me h1 {
-  margin: 40px auto 20px auto;
+  margin: auto;
   font-size: 48px;
   line-height: 1.1;
 }
@@ -166,7 +166,7 @@ main {
 }
 
 .reason .subtitle {
-  margin-top: 8px;
+  margin: 5px 0 15px 0;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.2;
@@ -385,7 +385,7 @@ footer {
   
   .about-me h1 {
     font-size: 70px;
-    margin: 60px auto 25px auto;
+    margin: auto;
   }
   
   .section-why-me {
@@ -417,7 +417,7 @@ footer {
   
   .reason .subtitle {
     font-size: 16px;
-    margin-top: 10px;
+    margin: 5px 0 15px 0;
   }
   
   .cases-section {
@@ -499,7 +499,7 @@ footer {
   
   .about-me h1 {
     font-size: 90px;
-    margin: 90px auto 15px auto;
+    margin: auto;
   }
   
   .section-why-me {
@@ -603,7 +603,7 @@ footer {
   
   .about-me h1 {
     font-size: 36px;
-    margin: 30px auto 15px auto;
+    margin: auto;
   }
   
   .section-why-me {
@@ -623,7 +623,8 @@ footer {
   
   .reason {
     padding: 15px 10px;
-    min-height: 120px;
+    height: 60px;
+    margin: 0 auto;
   }
   
   .reason h1 {
@@ -632,7 +633,7 @@ footer {
   
   .reason .subtitle {
     font-size: 12px;
-    margin-top: 5px;
+    margin: 5px 0 15px 0;
   }
   
   .cases-section {
